@@ -17,4 +17,21 @@
         AND user_password = #{userPassword}
     </select>
     
+    
+    <!-- ⭐ 추가: 회원정보 수정 -->
+    <update id="updateUser">
+        UPDATE user
+        SET username = #{username},
+            user_email = #{userEmail},
+            user_password = #{userPassword}
+        WHERE id = #{id}
+    </update>
+
+    <!-- ⭐ 추가: 회원 id로 회원정보 조회 -->
+    <select id="selectUserById" resultType="com.ssafy.enjoytrip.model.dto.UserDTO">
+        SELECT *
+        FROM user
+        WHERE id = #{id}
+    </select>
+    
  </mapper>
