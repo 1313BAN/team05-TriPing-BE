@@ -25,4 +25,13 @@ public class UserServiceImpl implements UserService {
 		return userRepository.login(user);
 	}
 
+	 @Override
+	    public boolean updateUser(UserDTO user) {
+	        return userRepository.updateUser(user) > 0;
+	    }
+
+	    @Override
+	    public UserDTO getUserById(Long userId) {
+	        return userRepository.selectUserById(userId.intValue());
+	    }
 }
