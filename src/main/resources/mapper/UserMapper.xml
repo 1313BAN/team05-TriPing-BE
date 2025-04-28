@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+ <mapper namespace="com.ssafy.enjoytrip.model.mapper.UserRepository">
+ 
+    <insert id="insertUser">
+        INSERT INTO user (username, user_email, user_password)
+        VALUES (#{username}, #{userEmail}, #{userPassword})
+    </insert>
+    
+    <select id="login" resultType="com.ssafy.enjoytrip.model.dto.UserDTO">
+        SELECT *
+        FROM user
+        WHERE user_email = #{userEmail}
+        AND user_password = #{userPassword}
+    </select>
+    
+ </mapper>
