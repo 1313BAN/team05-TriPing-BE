@@ -86,10 +86,10 @@ div {
 	<script src="${root }/assets/js/common.js"></script>
 	<script src="${root }/assets/js/kostat.js"></script>
 	<script src="${root }/assets/js/enjoytrip.js"></script>
-	<script src="${root }/assets/js/TopNav.js"></script>
 	<script>
       const init = async () => {
         areaCode1(); // enjoytrip.js
+        console.log("hihihi js")
         updateMap([
           {
             address: "서울특별시 강남구 테헤란로 212",

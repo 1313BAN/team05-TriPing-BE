@@ -40,15 +40,13 @@ const areaCode1 = async (areaCode) => {
 	}
 };
 
-area.addEventListener("change", async function() {
+area.addEventListener("change", async function () {
 	await areaCode1(area.value);
 });
 
-document.querySelector("#contentType").addEventListener("click", async () => {
-	const queryObj = {
-		action: "attractions",
-	};
-	// 추가로 설정할 조건이 있다면 추가하기
+// 관광지 조회
+document.querySelector("#contentType").addEventListener("change", async () => {
+	const queryObj = {};
 	if (area.value) {
 		queryObj.areaCode = area.value;
 	}
@@ -60,14 +58,43 @@ document.querySelector("#contentType").addEventListener("click", async () => {
 	}
 
 	try {
+		const queryString = new URLSearchParams(queryObj).toString();
+		console.log("📡 요청 URL:", `http://localhost:8080/attraction?${queryString}`);
+
+		const json = await getFetch("http://localhost:8080/attraction", queryObj);
+
+		console.log("📥 응답 데이터:", json);
+
+		const spots = json;
+		spots.forEach((element) => {
+			element.utmk = new sop.LatLng(element.latitude, element.longitude);
+			element.address = element.addr1;
+			element.label = element.title;
+			element.img = element.firstimage;
+			element.phone = element.tel;
+			element.ctype = element.contentTypeId;
+		});
+
+		updateMap(spots);
+	} catch (e) {
+		console.error("❌ 에러 발생:", e);
+	}
+
+});
+
+// 키워드 검색
+searchButton.addEventListener("click", async () => {
+	const keyword = searchText.value;
+	if (!keyword) return;
+
+	try {
 		const json = await getFetch(
-			"http://localhost:8080/enjoytrip_BE_01/attraction",
-			queryObj
+			"http://localhost:8080/attraction/search",
+			{ keyword }
 		);
 
 		const spots = json;
 		spots.forEach((element) => {
-			// 기본적으로 통계청의 SGIS map은 utmk 기반이므로 WG384(lat, lng)기반을 utmk 로 변경
 			element.utmk = new sop.LatLng(element.latitude, element.longitude);
 			element.address = element.addr1;
 			element.label = element.title;
@@ -80,37 +107,3 @@ document.querySelector("#contentType").addEventListener("click", async () => {
 		console.log(e);
 	}
 });
-
-console.log(searchButton);
-searchButton.addEventListener("click", async () => {
-	const queryObj = {
-		action: "search",
-	};
-	// 추가로 설정할 조건이 있다면 추가하기
-	queryObj.keyword = searchText.value;
-	console.log(searchText.value);
-	if(!searchText.value) return;
-
-	try {
-		const json = await getFetch(
-			"http://localhost:8080/enjoytrip_BE_01/attraction",
-			queryObj
-		);
-		
-		const spots = json;
-		console.log(spots);
-
-		spots.forEach((element) => {
-			// 기본적으로 통계청의 SGIS map은 utmk 기반이므로 WG384(lat, lng)기반을 utmk 로 변경
-			element.utmk = new sop.LatLng(element.latitude, element.longitude);
-			element.address = element.addr1;
-			element.label = element.title;
-			element.img = element.firstimage;
-			element.phone = element.tel;
-			element.ctype = element.contentTypeId;
-		});
-		updateMap(spots);
-	} catch (e) {
-		console.log(e);
-	}
-})
