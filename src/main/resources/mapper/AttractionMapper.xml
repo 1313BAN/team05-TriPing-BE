@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ssafy.enjoytrip.model.mapper.AttractionRepository">
+
+    <select id="getAll" resultType="com.ssafy.enjoytrip.model.dto.AttractionDTO">
+        SELECT * FROM attractions
+    </select>
+
+    <select id="getAllByPage" resultType="com.ssafy.enjoytrip.model.dto.AttractionDTO">
+        SELECT * FROM attractions
+        LIMIT 10 OFFSET #{page}
+    </select>
+
+    <select id="getById" resultType="com.ssafy.enjoytrip.model.dto.AttractionDTO">
+        SELECT * FROM attractions
+        WHERE no = #{id}
+    </select>
+
+    <select id="getWithContentTypeByPage" resultType="com.ssafy.enjoytrip.model.dto.AttractionDTO">
+        SELECT * FROM attractions
+        WHERE content_type_id = #{contentType}
+        LIMIT 10 OFFSET #{page}
+    </select>
+
+    <select id="getByAreaAndSigunguAndContentType" resultType="com.ssafy.enjoytrip.model.dto.AttractionDTO">
+        SELECT * FROM attractions
+        WHERE area_code = #{areaCode}
+          AND si_gun_gu_code = #{sigungu}
+          AND content_type_id = #{contentType}
+    </select>
+
+    <select id="getByAreaAndSigungu" resultType="com.ssafy.enjoytrip.model.dto.AttractionDTO">
+        SELECT * FROM attractions
+        WHERE area_code = #{areaCode}
+          AND si_gun_gu_code = #{sigungu}
+    </select>
+
+</mapper>
