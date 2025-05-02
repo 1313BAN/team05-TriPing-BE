@@ -3,6 +3,7 @@ package com.ssafy.enjoytrip.service;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.ssafy.enjoytrip.model.dto.LoginResponseDTO;
 import com.ssafy.enjoytrip.model.dto.UserDTO;
 import com.ssafy.enjoytrip.model.mapper.UserRepository;
 
@@ -21,8 +22,11 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public UserDTO login(UserDTO user) {
-		return userRepository.login(user);
+	public LoginResponseDTO login(UserDTO user) {
+		UserDTO loginUser = userRepository.login(user);
+	    if (loginUser == null)
+	        return new LoginResponseDTO(false, null);
+	    else return new LoginResponseDTO(true, loginUser);
 	}
 
 	 @Override
