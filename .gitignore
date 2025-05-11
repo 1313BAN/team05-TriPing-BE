@@ -1,49 +1,56 @@
-HELP.md
+# Maven build
 target/
 !.mvn/wrapper/maven-wrapper.jar
-!**/src/main/**/target/
-!**/src/test/**/target/
+mvnw
+mvnw.cmd
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
 
-### STS ###
+# Spring Boot
+*.log
+logs/
+tmp/
+.metadata/
+.env
+
+# STS (Spring Tool Suite)
 .apt_generated
 .classpath
 .factorypath
 .project
-.settings
+.settings/
 .springBeans
 .sts4-cache
 
-### IntelliJ IDEA ###
-.idea
+# IntelliJ IDEA
+.idea/
 *.iws
 *.iml
 *.ipr
 out/
-
-### NetBeans ###
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
+# IntelliJ-specific annotation cache
+/.externalSystem/
+.gradle/
 build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 
-### VS Code ###
+# VS Code
 .vscode/
-~
-~
-~
 
-### Logs and Temp Files ###
-logs/
-tmp/
-*.log
-
-### Mac System Files ###
+# macOS system files
 .DS_Store
 
-.metadata/
+# Windows system files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
 
-.env
+# Linux file
+*~
+
+# JetBrains run config files (optional)
+*.run.xml
