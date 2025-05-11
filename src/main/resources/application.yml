@@ -14,6 +14,11 @@ spring:
       maximum-pool-size: 5
       connection-timeout: 600000
 
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+
 mybatis:
   mapper-locations: classpath:/mapper/**/*.xml
   type-aliases-package: com.ssafy.enjoytrip.**.dto
