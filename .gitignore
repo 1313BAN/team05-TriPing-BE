@@ -50,3 +50,4 @@ tmp/
 ### Mac System Files ###
 .DS_Store
 
+.metadata/
