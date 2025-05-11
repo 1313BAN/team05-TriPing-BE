@@ -1,0 +1,18 @@
+package com.ssafy.enjoytrip.domain.user.model;
+
+import java.time.LocalDateTime;
+import lombok.*;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString
+public class User {
+    private Long id;
+    private String userEmail;
+    private String userPassword;
+    private String username;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+}

@@ -3,9 +3,9 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.ssafy.enjoytrip.model.mapper.ContentTypeRepository">
+<mapper namespace="com.ssafy.enjoytrip.domain.attraction.mapper.ContentTypeMapper">
 
-    <select id="getAll" resultType="com.ssafy.enjoytrip.model.dto.ContentTypeDTO">
+    <select id="getAll" resultType="com.ssafy.enjoytrip.domain.attraction.dto.ContentTypeDTO">
         SELECT content_type_id, name
         FROM content_type
     </select>
