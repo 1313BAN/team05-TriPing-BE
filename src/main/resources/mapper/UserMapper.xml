@@ -9,12 +9,11 @@
         INSERT INTO user (username, user_email, user_password)
         VALUES (#{username}, #{userEmail}, #{userPassword})
     </insert>
-    
-    <select id="login" resultType="com.ssafy.enjoytrip.domain.user.model.User">
+
+    <select id="selectByEmail" resultType="com.ssafy.enjoytrip.domain.user.model.User">
         SELECT *
         FROM user
         WHERE user_email = #{userEmail}
-        AND user_password = #{userPassword}
     </select>
     
     

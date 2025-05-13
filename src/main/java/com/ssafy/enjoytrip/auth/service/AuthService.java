@@ -1,6 +1,9 @@
 package com.ssafy.enjoytrip.auth.service;
 
-public class AuthService {
+import com.ssafy.enjoytrip.auth.dto.LoginRequestDTO;
+
+public interface AuthService {
+    String login(LoginRequestDTO request);  // JWT 토큰 반환
 }
 
 

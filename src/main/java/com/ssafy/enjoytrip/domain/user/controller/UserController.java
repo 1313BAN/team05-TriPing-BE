@@ -5,12 +5,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ssafy.enjoytrip.exception.UnauthorizedException;
-import com.ssafy.enjoytrip.domain.user.dto.LoginResponseDTO;
 import com.ssafy.enjoytrip.domain.user.model.User;
 import com.ssafy.enjoytrip.domain.user.service.UserService;
 
@@ -36,20 +34,6 @@ public class UserController {
 
 	// 로그인
 
-	@PostMapping("/login")
-	public LoginResponseDTO login(@RequestBody User user, HttpSession session) {
-		LoginResponseDTO res = userService.login(user); // 서비스에서 설정 다 된거임
-		if (res.isSuccess()) {
-			session.setAttribute("user", res.getUser());
-		}
-		return res;
-	}
-
-	@GetMapping("/logout")
-	public String logout(HttpSession session) {
-		session.invalidate();
-		return "index";
-	}
 
 	// GET 매핑으로 user/mypage 이런 식으로 들어온다면 -> session에서 user를 꺼내서 그 정보를 마이페이지에 출력해서
 	// forwarding

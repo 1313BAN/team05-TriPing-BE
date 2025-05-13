@@ -1,16 +1,14 @@
-package com.ssafy.enjoytrip.domain.user.dto;
+package com.ssafy.enjoytrip.auth.dto;
 
 import com.ssafy.enjoytrip.domain.user.model.User;
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
 @Getter
+@AllArgsConstructor
 public class LoginResponseDTO {
     private boolean success;
     private User user;
 }
+
+// accessToken 응답

@@ -1,6 +1,7 @@
 package com.ssafy.enjoytrip.config;
 
 import com.ssafy.enjoytrip.auth.jwt.JwtAuthenticationFilter;
+import com.ssafy.enjoytrip.auth.jwt.JwtProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,6 +24,7 @@ import java.util.Collections;
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
+    private final JwtProvider jwtProvider;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -59,10 +61,16 @@ public class SecurityConfig {
                                 new AntPathRequestMatcher("/**")  // 허용할 request 패턴
                         ).permitAll()
                         .anyRequest().authenticated()
-                );
+                )
 
                 // 여기 jwt 필터 추가
+                .addFilterBefore(jwtAuthenticationFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
+    }
+
+    @Bean
+    public JwtAuthenticationFilter jwtAuthenticationFilter(JwtProvider jwtProvider) {
+        return new JwtAuthenticationFilter(jwtProvider);
     }
 }

@@ -39,6 +39,16 @@ public class JwtProvider {
         return (List<String>) claims.get("roles");
     }
 
+
+    // 이메일 꺼내기
+    public String getEmail(String token) {
+        return Jwts.parser()
+                .setSigningKey(secretKey.getBytes())
+                .parseClaimsJws(token)
+                .getBody()
+                .getSubject();
+    }
+
     // 토큰 유효성 검사
     public boolean validateToken(String token) {
         try {
