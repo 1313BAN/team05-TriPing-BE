@@ -6,6 +6,9 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 public enum ErrorCode {
+
+    INTERNAL_ERROR(INTERNAL_SERVER_ERROR, "서버 에러가 발생했습니다."),
+
     // auth
     TOKEN_EXPIRED(UNAUTHORIZED, "토큰이 만료되었습니다."),
     INVALID_TOKEN(UNAUTHORIZED, "올바르지 않은 토큰입니다."),
