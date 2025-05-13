@@ -1,14 +1,11 @@
 package com.ssafy.enjoytrip.domain.user.controller;
 
+import com.ssafy.enjoytrip.domain.user.dto.SignUpResponse;
 import com.ssafy.enjoytrip.domain.user.exception.UserException;
 import com.ssafy.enjoytrip.exception.ErrorCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.ssafy.enjoytrip.domain.user.model.User;
 import com.ssafy.enjoytrip.domain.user.service.UserService;
@@ -24,13 +21,8 @@ public class UserController {
 	private final UserService userService;
 
 	@PostMapping("/signup")
-	public String register(@ModelAttribute User User) {
-		boolean result = userService.registerUser(User);
-		if (result) {
-			return "index";
-		} else {
-			return "index";
-		}
+	public ResponseEntity<SignUpResponse> register(@RequestBody User user) {
+		return ResponseEntity.ok(userService.registerUser(user));
 	}
 
 

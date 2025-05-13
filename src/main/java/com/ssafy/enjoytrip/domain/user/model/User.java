@@ -1,6 +1,8 @@
 package com.ssafy.enjoytrip.domain.user.model;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
+
 import lombok.*;
 
 @Getter
@@ -9,10 +11,10 @@ import lombok.*;
 @AllArgsConstructor
 @ToString
 public class User {
-    private Long id;
-    private String userEmail;
-    private String userPassword;
-    private String username;
+    private long id;
+    private String email;
+    private String password;
+    private String name;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

@@ -23,10 +23,10 @@ public class AuthServiceImpl implements AuthService {
     public String login(LoginRequestDTO request) {
         User user = userMapper.selectByEmail(request.getUserEmail());
 
-        if (user == null || !passwordEncoder.matches(request.getUserPassword(), user.getUserPassword())) {
+        if (user == null || !passwordEncoder.matches(request.getUserPassword(), user.getPassword())) {
             throw new RuntimeException("이메일 또는 비밀번호가 틀렸습니다.");
         }
 
-        return jwtProvider.createToken(user.getUserEmail(), List.of("ROLE_USER"));
+        return jwtProvider.createToken(user.getEmail(), List.of("ROLE_USER"));
     }
 }
