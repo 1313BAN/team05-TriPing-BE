@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.ssafy.enjoytrip.domain.user.dto.LoginResponseDTO;
 import com.ssafy.enjoytrip.domain.user.model.User;
 import com.ssafy.enjoytrip.domain.user.service.UserService;
 
@@ -33,9 +32,6 @@ public class UserController {
 			return "index";
 		}
 	}
-
-	// 로그인
-
 
 
 	@GetMapping("/mypage")
