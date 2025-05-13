@@ -1,5 +1,7 @@
 package com.ssafy.enjoytrip.domain.user.controller;
 
+import com.ssafy.enjoytrip.domain.user.exception.UserException;
+import com.ssafy.enjoytrip.exception.ErrorCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -9,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.ssafy.enjoytrip.exception.UnauthorizedException;
 import com.ssafy.enjoytrip.domain.user.dto.LoginResponseDTO;
 import com.ssafy.enjoytrip.domain.user.model.User;
 import com.ssafy.enjoytrip.domain.user.service.UserService;
@@ -51,20 +52,12 @@ public class UserController {
 		return "index";
 	}
 
-	// GET 매핑으로 user/mypage 이런 식으로 들어온다면 -> session에서 user를 꺼내서 그 정보를 마이페이지에 출력해서
-	// forwarding
-	/*
-	 * @GetMapping("/mypage") public String mypage(HttpSession session) { if
-	 * (session.getAttribute("user") == null) { // 로그인 안 한 상태면 로그인 화면으로 리다이렉트 return
-	 * "redirect:/"; // 또는 로그인 모달 뜨게 } return "pages/mypage"; // (mypage.jsp 위치에 따라
-	 * 경로 조정) }
-	 */
 
 	@GetMapping("/mypage")
 	public ResponseEntity<User> mypage(HttpSession session) {
 		User user = (User) session.getAttribute("user");
 		
-		if (user == null) throw new UnauthorizedException("로그인이 필요합니다.");
+		if (user == null) throw new UserException(ErrorCode.USER_NOT_FOUND);
 		return ResponseEntity.ok(user);
 	}
 
