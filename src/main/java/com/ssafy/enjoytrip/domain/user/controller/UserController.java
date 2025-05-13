@@ -7,7 +7,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -37,20 +36,6 @@ public class UserController {
 
 	// 로그인
 
-	@PostMapping("/login")
-	public LoginResponseDTO login(@RequestBody User user, HttpSession session) {
-		LoginResponseDTO res = userService.login(user); // 서비스에서 설정 다 된거임
-		if (res.isSuccess()) {
-			session.setAttribute("user", res.getUser());
-		}
-		return res;
-	}
-
-	@GetMapping("/logout")
-	public String logout(HttpSession session) {
-		session.invalidate();
-		return "index";
-	}
 
 
 	@GetMapping("/mypage")
