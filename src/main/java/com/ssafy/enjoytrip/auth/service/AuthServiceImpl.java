@@ -2,9 +2,11 @@ package com.ssafy.enjoytrip.auth.service;
 
 import com.ssafy.enjoytrip.auth.dto.LoginRequestDTO;
 import com.ssafy.enjoytrip.auth.dto.LoginResponseDTO;
+import com.ssafy.enjoytrip.auth.exception.AuthException;
 import com.ssafy.enjoytrip.auth.jwt.JwtProvider;
 import com.ssafy.enjoytrip.domain.user.mapper.UserMapper;
 import com.ssafy.enjoytrip.domain.user.model.User;
+import com.ssafy.enjoytrip.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -21,12 +23,13 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public String login(LoginRequestDTO request) {
-        User user = userMapper.selectByEmail(request.getUserEmail());
+        User user = userMapper.selectByEmail(request.getEmail());
 
-        if (user == null || !passwordEncoder.matches(request.getUserPassword(), user.getPassword())) {
-            throw new RuntimeException("이메일 또는 비밀번호가 틀렸습니다.");
+        if (user == null || !passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            throw new AuthException(ErrorCode.INVALID_CREDENTIALS);
         }
 
-        return jwtProvider.createToken(user.getEmail(), List.of("ROLE_USER"));
+        return jwtProvider.createToken(String.valueOf(user.getId()), List.of("ROLE_USER"));
+
     }
 }
