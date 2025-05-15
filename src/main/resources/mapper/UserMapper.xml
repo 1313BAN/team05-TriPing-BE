@@ -20,17 +20,22 @@
     </select>
 
     <!-- 회원정보 수정 -->
-    <update id="updateUser">
+    <update id="updateUser" parameterType="com.ssafy.enjoytrip.domain.user.model.User">
         UPDATE users
-        SET name = #{name},
+        SET
+            name = #{name},
             email = #{email},
-            password = #{password},
-            updated_at = NOW()
+            password = #{password}
         WHERE id = #{id}
     </update>
 
+    <delete id="deleteUserById" parameterType="long">
+        DELETE FROM users
+        WHERE id = #{userId}
+    </delete>
+
     <!-- ID로 사용자 조회 -->
-    <select id="selectUserById" resultType="com.ssafy.enjoytrip.domain.user.model.User">
+    <select id="selectUserById" parameterType="long" resultType="com.ssafy.enjoytrip.domain.user.model.User">
         SELECT *
         FROM users
         WHERE id = #{id}

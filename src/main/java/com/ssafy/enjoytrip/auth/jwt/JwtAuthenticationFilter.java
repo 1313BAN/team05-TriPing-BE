@@ -1,6 +1,7 @@
 package com.ssafy.enjoytrip.auth.jwt;
 
-import io.jsonwebtoken.JwtException;
+import com.ssafy.enjoytrip.domain.user.mapper.UserMapper;
+import com.ssafy.enjoytrip.domain.user.model.User;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -13,12 +14,14 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.Collections;
 
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtProvider jwtProvider;
+
+    // ✅ 추가: 사용자 조회를 위한 매퍼 주입
+    private final UserMapper userMapper;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -29,27 +32,36 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String token = extractToken(request);
 
         if (token != null && jwtProvider.validateToken(token)) {
-            String email = jwtProvider.getEmail(token);
 
-            // 인증 객체 생성
+            // ✅ userId 추출
+            Long userId = Long.valueOf(jwtProvider.getUserId(token));
+
+            // ✅ user 조회
+            User user = userMapper.selectUserById(userId);
+            if (user == null) {
+                throw new RuntimeException("사용자 없음");
+            }
+
+            // ✅ UserPrincipal 생성
+            UserPrincipal userPrincipal = UserPrincipal.from(user);
+
+            // ✅ 인증 객체에 UserPrincipal 주입
             UsernamePasswordAuthenticationToken authentication =
-                    new UsernamePasswordAuthenticationToken(email, null, Collections.emptyList());
+                    new UsernamePasswordAuthenticationToken(userPrincipal, null, userPrincipal.getAuthorities());
 
             authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-            // SecurityContext에 인증정보 등록
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
 
-        filterChain.doFilter(request, response); // 다음 필터로 진행
+        filterChain.doFilter(request, response);
     }
 
-    // 헤더에서 토큰 꺼내기
     private String extractToken(HttpServletRequest request) {
         String authHeader = request.getHeader("Authorization");
 
         if (StringUtils.hasText(authHeader) && authHeader.startsWith("Bearer ")) {
-            return authHeader.substring(7); // "Bearer " 이후부터 토큰
+            return authHeader.substring(7);
         }
 
         return null;

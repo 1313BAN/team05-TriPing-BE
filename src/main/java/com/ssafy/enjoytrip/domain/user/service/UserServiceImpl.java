@@ -1,6 +1,6 @@
 package com.ssafy.enjoytrip.domain.user.service;
 
-import com.ssafy.enjoytrip.domain.user.dto.SignUpResponse;
+import com.ssafy.enjoytrip.domain.user.dto.UserIdResponse;
 import com.ssafy.enjoytrip.domain.user.exception.UserException;
 import com.ssafy.enjoytrip.exception.ErrorCode;
 import com.ssafy.enjoytrip.util.ValidUtil;
@@ -22,7 +22,7 @@ public class UserServiceImpl implements UserService {
 	private final PasswordEncoder passwordEncoder;
 
 	@Override
-	public SignUpResponse registerUser(User user) {
+	public UserIdResponse registerUser(User user) {
 		if (!ValidUtil.isValidEmail(user.getEmail()) || !ValidUtil.isValidPassword(user.getPassword())) {
 			throw new UserException(ErrorCode.INVALID_FORMAT);
 		}
@@ -38,18 +38,51 @@ public class UserServiceImpl implements UserService {
 		userMapper.insertUser(user);
 
 		// 방금 등록된 user 반환 (id 포함해서)
-		return new SignUpResponse(user.getId());
+		return new UserIdResponse(user.getId());
 	}
 
 
 
-	 @Override
-	    public boolean updateUser(User user) {
-	        return userMapper.updateUser(user) > 0;
-	    }
+	public UserIdResponse updateUser(Long userId, User updatedData) {
+		User existing = userMapper.selectUserById(userId);
+		if (existing == null) {
+			throw new UserException(ErrorCode.USER_NOT_FOUND);
+		}
 
-	    @Override
-	    public User getUserById(Long userId) {
-	        return userMapper.selectUserById(userId.intValue());
-	    }
+		if (!ValidUtil.isValidPassword(updatedData.getPassword())) {
+			throw new UserException(ErrorCode.INVALID_FORMAT);
+		}
+		existing.setName(updatedData.getName());
+		existing.setEmail(updatedData.getEmail());
+
+		// ✅ 비밀번호가 null 또는 공백이 아닐 경우에만 암호화
+		if (updatedData.getPassword() != null && !updatedData.getPassword().isBlank()) {
+			String encryptedPassword = passwordEncoder.encode(updatedData.getPassword());
+			existing.setPassword(encryptedPassword);
+		}
+
+
+
+		userMapper.updateUser(existing);
+		return new UserIdResponse(existing.getId());
+	}
+
+	@Override
+	public void deleteUser(Long userId) {
+		User existing = userMapper.selectUserById(userId);
+		if (existing == null) {
+			throw new UserException(ErrorCode.USER_NOT_FOUND);
+		}
+
+		userMapper.deleteUserById(userId);
+	}
+
+		@Override
+		public User getUserById(Long userId) {
+			User user = userMapper.selectUserById(userId);
+			if (user == null) {
+				throw new UserException(ErrorCode.USER_NOT_FOUND);
+			}
+			return user;
+		}
 }

@@ -1,16 +1,17 @@
 package com.ssafy.enjoytrip.domain.user.controller;
 
-import com.ssafy.enjoytrip.domain.user.dto.SignUpResponse;
+import com.ssafy.enjoytrip.auth.jwt.UserPrincipal;
+import com.ssafy.enjoytrip.domain.user.dto.UserIdResponse;
 import com.ssafy.enjoytrip.domain.user.exception.UserException;
 import com.ssafy.enjoytrip.exception.ErrorCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import com.ssafy.enjoytrip.domain.user.model.User;
 import com.ssafy.enjoytrip.domain.user.service.UserService;
 
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -20,29 +21,38 @@ import lombok.RequiredArgsConstructor;
 public class UserController {
 	private final UserService userService;
 
-	@PostMapping("/signup")
-	public ResponseEntity<SignUpResponse> register(@RequestBody User user) {
-		return ResponseEntity.ok(userService.registerUser(user));
-	}
-
-
-	@GetMapping("/mypage")
-	public ResponseEntity<User> mypage(HttpSession session) {
-		User user = (User) session.getAttribute("user");
-		
-		if (user == null) throw new UserException(ErrorCode.USER_NOT_FOUND);
+	// logout
+	@GetMapping("/me")
+	public ResponseEntity<User> getMyInfo(@AuthenticationPrincipal UserPrincipal userPrincipal) {
+		if (userPrincipal == null) {
+			throw new UserException(ErrorCode.USER_NOT_FOUND);
+		}
+		User user = userService.getUserById(userPrincipal.getId());
 		return ResponseEntity.ok(user);
 	}
 
 	// 유저정보 수정
-	@PostMapping("/update")
-	public String updateUser(User updatedUser, HttpSession session) {
+	@PutMapping("/me")
+	public ResponseEntity<UserIdResponse> updateMyInfo(
+			@AuthenticationPrincipal UserPrincipal userPrincipal,
+			@RequestBody User updatedData) {
 
-		userService.updateUser(updatedUser);
+		if (userPrincipal == null) {
+			throw new UserException(ErrorCode.USER_NOT_FOUND);
+		}
 
-		session.setAttribute("user", updatedUser);
+		UserIdResponse response = userService.updateUser(userPrincipal.getId(), updatedData);
+		return ResponseEntity.ok(response); // 200 OK + JSON body
+	}
 
-		// 4. 다시 마이페이지로 이동
-		return "redirect:/user/mypage";
+	// delete
+	@DeleteMapping("/me")
+	public ResponseEntity<Void> deleteMyAccount(@AuthenticationPrincipal UserPrincipal userPrincipal) {
+		if (userPrincipal == null) {
+			throw new UserException(ErrorCode.USER_NOT_FOUND);
+		}
+
+		userService.deleteUser(userPrincipal.getId());
+		return ResponseEntity.noContent().build(); // 204 응답
 	}
 }
