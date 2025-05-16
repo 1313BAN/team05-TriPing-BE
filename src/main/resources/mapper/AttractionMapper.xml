@@ -38,4 +38,12 @@
           AND si_gun_gu_code = #{sigungu}
     </select>
 
+    <select id="findMarkersByViewport" resultType="com.ssafy.enjoytrip.domain.attraction.dto.AttractionMarkerDTO">
+        SELECT no, title, latitude, longitude, first_image1
+        FROM attractions
+        WHERE latitude BETWEEN #{lat1} AND #{lat2}
+        AND longitude BETWEEN #{lng1} AND #{lng2}
+    </select>
+
+
 </mapper>
