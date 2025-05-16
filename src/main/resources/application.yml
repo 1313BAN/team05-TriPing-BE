@@ -22,8 +22,7 @@ spring:
   devtools:
     restart:
       enabled: true
-    livereload:
-      enabled: true
+
 
 mybatis:
   mapper-locations: classpath:/mapper/**/*.xml

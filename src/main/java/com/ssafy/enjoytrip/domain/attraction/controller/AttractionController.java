@@ -23,6 +23,7 @@ public class AttractionController {
             @RequestParam(defaultValue = "0") int sigunguCode,
             @RequestParam(defaultValue = "0") int contentTypeId
     ) {
+        System.out.println("Gskaaaadfas123");
         return attractionService.getByOption(areaCode, sigunguCode, contentTypeId);
     }
 

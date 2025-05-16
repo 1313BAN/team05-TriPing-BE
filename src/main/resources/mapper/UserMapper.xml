@@ -31,7 +31,7 @@
 
     <delete id="deleteUserById" parameterType="long">
         DELETE FROM users
-        WHERE id = #{userId}
+        WHERE id = #{id}
     </delete>
 
     <!-- ID로 사용자 조회 -->
