@@ -2,7 +2,7 @@ package com.ssafy.enjoytrip.config;
 
 import com.ssafy.enjoytrip.auth.jwt.JwtAuthenticationFilter;
 import com.ssafy.enjoytrip.auth.jwt.JwtProvider;
-import com.ssafy.enjoytrip.domain.user.mapper.UserMapper;
+import com.ssafy.enjoytrip.auth.service.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,6 +18,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
+
 import java.util.Collections;
 
 @RequiredArgsConstructor
@@ -25,8 +26,9 @@ import java.util.Collections;
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
+
     private final JwtProvider jwtProvider;
-    private final UserMapper userMapper;
+    private final CustomUserDetailsService userDetailsService;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -47,34 +49,28 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-                // REST API 설정
-                .csrf(AbstractHttpConfigurer::disable) // CSRF 비활성화
-                .cors(corsConfigurer -> corsConfigurer.configurationSource(corsConfigurationSource()))
-                .httpBasic(AbstractHttpConfigurer::disable) // 기본 인증 로그인 비활성화
-                .formLogin(AbstractHttpConfigurer::disable) // 기본 로그인 폼 비활성화
-                .logout(AbstractHttpConfigurer::disable) // 기본 로그아웃 비활성화
-                .sessionManagement(c -> c.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 세션 사용 안 함
-
-                // 요청 인증 및 인가 설정
-                .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers(
-                                new AntPathRequestMatcher("/auth/**"),
-                                new AntPathRequestMatcher("/attraction/**")// 허용할 request 패턴
-                        ).permitAll()
-                        .anyRequest().authenticated()
-                )
-
-                // 여기 jwt 필터 추가
-                .addFilterBefore(jwtAuthenticationFilter(jwtProvider, userMapper), UsernamePasswordAuthenticationFilter.class);
-
-        return http.build();
+    public JwtAuthenticationFilter jwtAuthenticationFilter() {
+        return new JwtAuthenticationFilter(jwtProvider, userDetailsService);
     }
 
     @Bean
-    public JwtAuthenticationFilter jwtAuthenticationFilter(JwtProvider jwtProvider, UserMapper userMapper) {
-        return new JwtAuthenticationFilter(jwtProvider, userMapper);
-    }
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http
+                .csrf(AbstractHttpConfigurer::disable)
+                .cors(corsConfigurer -> corsConfigurer.configurationSource(corsConfigurationSource()))
+                .httpBasic(AbstractHttpConfigurer::disable)
+                .formLogin(AbstractHttpConfigurer::disable)
+                .logout(AbstractHttpConfigurer::disable)
+                .sessionManagement(c -> c.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers(
+                                new AntPathRequestMatcher("/auth/**"),
+                                new AntPathRequestMatcher("/attraction/**")
+                        ).permitAll()
+                        .anyRequest().authenticated()
+                )
+                .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 
+        return http.build();
+    }
 }

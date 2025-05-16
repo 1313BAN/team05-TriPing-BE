@@ -1,7 +1,6 @@
 package com.ssafy.enjoytrip.auth.jwt;
 
-import com.ssafy.enjoytrip.domain.user.mapper.UserMapper;
-import com.ssafy.enjoytrip.domain.user.model.User;
+import com.ssafy.enjoytrip.auth.service.CustomUserDetailsService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -9,6 +8,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -19,9 +19,7 @@ import java.io.IOException;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtProvider jwtProvider;
-
-    // ✅ 추가: 사용자 조회를 위한 매퍼 주입
-    private final UserMapper userMapper;
+    private final CustomUserDetailsService userDetailsService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -32,25 +30,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String token = extractToken(request);
 
         if (token != null && jwtProvider.validateToken(token)) {
-
-            // ✅ userId 추출
+            // userId 추출
             Long userId = Long.valueOf(jwtProvider.getUserId(token));
 
-            // ✅ user 조회
-            User user = userMapper.selectUserById(userId);
-            if (user == null) {
-                throw new RuntimeException("사용자 없음");
-            }
+            // UserDetailsService를 통해 사용자 정보 로드
+            UserDetails userDetails = userDetailsService.loadUserById(userId);
 
-            // ✅ UserPrincipal 생성
-            UserPrincipal userPrincipal = UserPrincipal.from(user);
-
-            // ✅ 인증 객체에 UserPrincipal 주입
+            // 인증 객체 생성 및 설정
             UsernamePasswordAuthenticationToken authentication =
-                    new UsernamePasswordAuthenticationToken(userPrincipal, null, userPrincipal.getAuthorities());
+                    new UsernamePasswordAuthenticationToken(
+                            userDetails, null, userDetails.getAuthorities());
 
             authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
 
@@ -67,4 +58,3 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         return null;
     }
 }
-
