@@ -39,7 +39,7 @@
     </select>
 
     <select id="findMarkersByArea" resultType="com.ssafy.enjoytrip.domain.attraction.dto.AttractionMarkerDTO">
-        SELECT no, title, latitude, longitude, first_image1, area_code, si_gun_gu_code
+        SELECT no, title, latitude, longitude, first_image1
         FROM (
         SELECT *, ROW_NUMBER() OVER (PARTITION BY area_code ORDER BY RAND()) AS rn
         FROM attractions
@@ -51,7 +51,7 @@
 
     <!-- 10 <= zoomLevel <= 14: si_gun_gu_code 기준 대표 마커 -->
     <select id="findMarkersBySigungu" resultType="com.ssafy.enjoytrip.domain.attraction.dto.AttractionMarkerDTO">
-        SELECT no, title, latitude, longitude, first_image1, area_code, si_gun_gu_code
+        SELECT no, title, latitude, longitude, first_image1
         FROM (
         SELECT *, ROW_NUMBER() OVER (PARTITION BY si_gun_gu_code ORDER BY RAND()) AS rn
         FROM attractions
@@ -63,7 +63,7 @@
 
     <!-- zoomLevel >= 15: 모든 마커 -->
     <select id="findMarkersAll" resultType="com.ssafy.enjoytrip.domain.attraction.dto.AttractionMarkerDTO">
-        SELECT no, title, latitude, longitude, first_image1, area_code, si_gun_gu_code
+        SELECT no, title, latitude, longitude, first_image1
         FROM attractions
         WHERE latitude BETWEEN #{lat1} AND #{lat2}
         AND longitude BETWEEN #{lng1} AND #{lng2}

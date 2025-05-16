@@ -23,7 +23,6 @@ public class AttractionController {
             @RequestParam(defaultValue = "0") int sigunguCode,
             @RequestParam(defaultValue = "0") int contentTypeId
     ) {
-        System.out.println("Gskaaaadfas123");
         return attractionService.getByOption(areaCode, sigunguCode, contentTypeId);
     }
 
@@ -42,7 +41,6 @@ public class AttractionController {
             @RequestParam BigDecimal lng2,
             @RequestParam Integer zoomLevel
     ) {
-        System.out.println("gi");
         return attractionService.getMarkersInViewport(lat1, lat2, lng1, lng2, zoomLevel);
     }
 }

@@ -13,6 +13,4 @@ public class AttractionMarkerDTO {
     private BigDecimal latitude;    // 위도
     private BigDecimal longitude;   // 경도
     private String firstImage1;     // 마커용 이미지
-    private Integer areaCode;        // 시도코드
-    private Integer siGunGuCode;     // 구군코드
 }
