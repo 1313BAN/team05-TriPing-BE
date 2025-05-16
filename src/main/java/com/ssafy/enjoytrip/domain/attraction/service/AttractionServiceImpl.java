@@ -70,7 +70,13 @@ public class AttractionServiceImpl implements AttractionService {
 
     @Override
     public List<AttractionMarkerDTO> getMarkersInViewport(BigDecimal lat1, BigDecimal lat2, BigDecimal lng1, BigDecimal lng2, Integer zoomLevel) {
-        return attractionMapper.findMarkersByViewport(lat1, lat2, lng1, lng2, zoomLevel);
+        if (zoomLevel <= 9) {
+            return attractionMapper.findMarkersByArea(lat1, lat2, lng1, lng2, zoomLevel);
+        } else if (zoomLevel <= 14) {
+            return attractionMapper.findMarkersBySigungu(lat1, lat2, lng1, lng2, zoomLevel);
+        } else {
+            return attractionMapper.findMarkersAll(lat1, lat2, lng1, lng2, zoomLevel);
+        }
     }
 
     private Integer getMostSimilarValue(Map<String, Integer> map, String query) {

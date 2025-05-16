@@ -9,7 +9,6 @@ services:
     volumes:
       - .:/app
       - ~/.m2:/root/.m2
-      - ./target/classes:/app/target/classes
     ports:
       - "8080:8080"
     env_file:

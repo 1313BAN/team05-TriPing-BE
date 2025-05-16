@@ -24,10 +24,21 @@ public interface AttractionMapper {
 
     List<Attraction> getByAreaAndSigungu(@Param("areaCode") int areaCode, @Param("sigungu") int sigungu);
 
-    List<AttractionMarkerDTO> findMarkersByViewport(@Param("lat1") BigDecimal lat1,
-                                                    @Param("lat2") BigDecimal lat2,
-                                                    @Param("lng1") BigDecimal lng1,
-                                                    @Param("lng2") BigDecimal lng2,
-                                                    @Param("zoomLevel") Integer zoomLevel);
+    List<AttractionMarkerDTO> findMarkersByArea(@Param("lat1") BigDecimal lat1,
+                                                @Param("lat2") BigDecimal lat2,
+                                                @Param("lng1") BigDecimal lng1,
+                                                @Param("lng2") BigDecimal lng2,
+                                                @Param("zoomLevel") Integer zoomLevel);
 
+    List<AttractionMarkerDTO> findMarkersBySigungu(@Param("lat1") BigDecimal lat1,
+                                                   @Param("lat2") BigDecimal lat2,
+                                                   @Param("lng1") BigDecimal lng1,
+                                                   @Param("lng2") BigDecimal lng2,
+                                                   @Param("zoomLevel") Integer zoomLevel);
+
+    List<AttractionMarkerDTO> findMarkersAll(@Param("lat1") BigDecimal lat1,
+                                             @Param("lat2") BigDecimal lat2,
+                                             @Param("lng1") BigDecimal lng1,
+                                             @Param("lng2") BigDecimal lng2,
+                                             @Param("zoomLevel") Integer zoomLevel);
 }
