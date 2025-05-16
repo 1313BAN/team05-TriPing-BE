@@ -1,6 +1,7 @@
 package com.ssafy.enjoytrip.auth.jwt;
 
 import io.jsonwebtoken.*;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
@@ -9,12 +10,16 @@ import java.util.List;
 @Component
 public class JwtProvider {
 
-    private final String secretKey = "example-secret-key";  // .env에 분리
+    //private final String secretKey = "example-secret-key-should-be-at-least-32-characters"; // .env에 분리
+    @Value("${jwt.secret}")
+    private String secretKey;
+
     private final long accessTokenExpiration = 60 * 60 * 1000L; // 1시간
 
-    // 토큰 생성
-    public String createToken(String username, List<String> roles) {
-        Claims claims = Jwts.claims().setSubject(username);
+
+    //토큰 생성 수정
+    public String createToken(String userId, List<String> roles) {
+        Claims claims = Jwts.claims().setSubject(userId); // ✅ 여기 subject는 long → String으로 전달됨
         claims.put("roles", roles);
 
         Date now = new Date();
@@ -31,6 +36,11 @@ public class JwtProvider {
     // 사용자 이름 추출
     public String getUsername(String token) {
         return parseClaims(token).getSubject();
+    }
+
+    //사용자 ID 추출
+    public String getUserId(String token) {
+        return parseClaims(token).getSubject(); // 이제는 userId가 들어 있음!
     }
 
     // roles 정보 추출 (선택)

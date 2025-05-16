@@ -25,17 +25,11 @@ spring:
     livereload:
       enabled: true
 
-#  springdoc:
-#    api-docs:
-#      path: /v3/api-docs
-#    swagger-ui:
-#      path: /swagger-ui.html
-
 mybatis:
   mapper-locations: classpath:/mapper/**/*.xml
-  type-aliases-package: com.ssafy.enjoytrip.**.dto
-  config-location: classpath:mybatis-config.xml
-
+  type-aliases-package: com.ssafy.enjoytrip.**.model
+  configuration:
+    map-underscore-to-camel-case: true
 
 logging:
   level:
@@ -44,3 +38,6 @@ logging:
     org.springframework.web: INFO
     org.hibernate.SQL: DEBUG
     org.hibernate.type.descriptor.sql: TRACE
+
+jwt:
+  secret: ${JWT_SECRET}

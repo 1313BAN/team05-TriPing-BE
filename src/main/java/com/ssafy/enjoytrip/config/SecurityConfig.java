@@ -2,6 +2,7 @@ package com.ssafy.enjoytrip.config;
 
 import com.ssafy.enjoytrip.auth.jwt.JwtAuthenticationFilter;
 import com.ssafy.enjoytrip.auth.jwt.JwtProvider;
+import com.ssafy.enjoytrip.domain.user.mapper.UserMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,6 +26,7 @@ import java.util.Collections;
 @EnableMethodSecurity
 public class SecurityConfig {
     private final JwtProvider jwtProvider;
+    private final UserMapper userMapper;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -58,19 +60,21 @@ public class SecurityConfig {
                 // 요청 인증 및 인가 설정
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(
-                                new AntPathRequestMatcher("/**")  // 허용할 request 패턴
+                                new AntPathRequestMatcher("/auth/**"),
+                                new AntPathRequestMatcher("/attraction/**")// 허용할 request 패턴
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
 
                 // 여기 jwt 필터 추가
-                .addFilterBefore(jwtAuthenticationFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtAuthenticationFilter(jwtProvider, userMapper), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
 
     @Bean
-    public JwtAuthenticationFilter jwtAuthenticationFilter(JwtProvider jwtProvider) {
-        return new JwtAuthenticationFilter(jwtProvider);
+    public JwtAuthenticationFilter jwtAuthenticationFilter(JwtProvider jwtProvider, UserMapper userMapper) {
+        return new JwtAuthenticationFilter(jwtProvider, userMapper);
     }
+
 }
