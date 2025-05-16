@@ -72,7 +72,7 @@ public class AttractionServiceImpl implements AttractionService {
     public List<AttractionMarkerDTO> getMarkersInViewport(BigDecimal lat1, BigDecimal lat2, BigDecimal lng1, BigDecimal lng2, Integer zoomLevel) {
         if (zoomLevel <= 9) {
             return attractionMapper.findMarkersByArea(lat1, lat2, lng1, lng2, zoomLevel);
-        } else if (zoomLevel <= 14) {
+        } else if (zoomLevel <= 15) {
             return attractionMapper.findMarkersBySigungu(lat1, lat2, lng1, lng2, zoomLevel);
         } else {
             return attractionMapper.findMarkersAll(lat1, lat2, lng1, lng2, zoomLevel);
