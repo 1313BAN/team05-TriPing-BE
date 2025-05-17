@@ -77,4 +77,17 @@
         AND longitude BETWEEN #{lng1} AND #{lng2}
     </select>
 
+    <select id="findNearbyAttractions" resultType="com.ssafy.enjoytrip.domain.attraction.model.Attraction">
+        SELECT *,
+        (6371000 * ACOS(
+        COS(RADIANS(#{lat})) * COS(RADIANS(latitude)) *
+        COS(RADIANS(longitude) - RADIANS(#{lng})) +
+        SIN(RADIANS(#{lat})) * SIN(RADIANS(latitude))
+        )) AS distance
+        FROM attractions
+        HAVING distance &lt;= #{radius}
+        ORDER BY distance ASC
+    </select>
+
+
 </mapper>

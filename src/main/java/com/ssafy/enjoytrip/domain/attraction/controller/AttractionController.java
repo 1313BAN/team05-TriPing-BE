@@ -1,9 +1,11 @@
 package com.ssafy.enjoytrip.domain.attraction.controller;
 
+import com.ssafy.enjoytrip.domain.attraction.dto.AttractionPolygonDTO;
 import com.ssafy.enjoytrip.domain.attraction.model.Attraction;
 import com.ssafy.enjoytrip.domain.attraction.dto.AttractionMarkerDTO;
 import com.ssafy.enjoytrip.domain.attraction.service.AttractionService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
@@ -42,5 +44,18 @@ public class AttractionController {
             @RequestParam Integer zoomLevel
     ) {
         return attractionService.getMarkersInViewport(lat1, lat2, lng1, lng2, zoomLevel);
+    }
+
+    // 위치 기반 진입 여부 확인
+    @GetMapping("/entered")
+    public ResponseEntity<AttractionPolygonDTO> checkIfEntered(
+            @RequestParam BigDecimal lat,
+            @RequestParam BigDecimal lng
+    ) {
+        AttractionPolygonDTO dto = attractionService.checkIfEntered(lat, lng);
+        if (dto == null) {
+            return ResponseEntity.noContent().build(); // 204
+        }
+        return ResponseEntity.ok(dto); // 200 + body
     }
 }

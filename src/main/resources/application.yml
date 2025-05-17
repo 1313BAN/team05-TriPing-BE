@@ -40,3 +40,6 @@ logging:
 
 jwt:
   secret: ${JWT_SECRET}
+
+overpass:
+  url: https://overpass.kumi.systems/api/interpreter

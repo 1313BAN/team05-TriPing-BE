@@ -1,5 +1,6 @@
 package com.ssafy.enjoytrip.domain.attraction.service;
 
+import com.ssafy.enjoytrip.domain.attraction.dto.AttractionPolygonDTO;
 import com.ssafy.enjoytrip.domain.attraction.model.Attraction;
 import com.ssafy.enjoytrip.domain.attraction.dto.AttractionPagingDTO;
 import com.ssafy.enjoytrip.domain.attraction.dto.AttractionMarkerDTO;
@@ -15,6 +16,6 @@ public interface AttractionService {
     List<ContentTypeDTO> getContentTypes();
     List<Attraction> getByOption(int areaCode, int sigunguCode, int contentType);
     List<Attraction> getByKeyword(String keyString);
-
     List<AttractionMarkerDTO> getMarkersInViewport(BigDecimal lat1, BigDecimal lat2, BigDecimal lng1, BigDecimal lng2, Integer zoomLevel);
+    AttractionPolygonDTO checkIfEntered(BigDecimal lat, BigDecimal lng);
 }

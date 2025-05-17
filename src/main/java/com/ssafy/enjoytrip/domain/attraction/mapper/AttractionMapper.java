@@ -41,4 +41,10 @@ public interface AttractionMapper {
                                              @Param("lng1") BigDecimal lng1,
                                              @Param("lng2") BigDecimal lng2,
                                              @Param("zoomLevel") Integer zoomLevel);
+
+    List<Attraction> findNearbyAttractions(
+            @Param("lat") BigDecimal lat,
+            @Param("lng") BigDecimal lng,
+            @Param("radius") int radius
+    );
 }
