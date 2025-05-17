@@ -1,9 +1,11 @@
 package com.ssafy.enjoytrip.domain.user.controller;
 
 import com.ssafy.enjoytrip.auth.jwt.UserPrincipal;
+import com.ssafy.enjoytrip.domain.user.dto.PasswordChangeRequest;
 import com.ssafy.enjoytrip.domain.user.dto.UserIdResponse;
 import com.ssafy.enjoytrip.domain.user.exception.UserException;
 import com.ssafy.enjoytrip.exception.ErrorCode;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -15,7 +17,6 @@ import com.ssafy.enjoytrip.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@Controller
 @RequestMapping("/user")
 @RequiredArgsConstructor
 public class UserController {
@@ -45,7 +46,7 @@ public class UserController {
 		return ResponseEntity.ok(response); // 200 OK + JSON body
 	}
 
-	// delete
+	//유저정보 삭제
 	@DeleteMapping("/me")
 	public ResponseEntity<Void> deleteMyAccount(@AuthenticationPrincipal UserPrincipal userPrincipal) {
 		if (userPrincipal == null) {
@@ -55,4 +56,14 @@ public class UserController {
 		userService.deleteUser(userPrincipal.getId());
 		return ResponseEntity.noContent().build(); // 204 응답
 	}
+
+	//비밀번호 변경
+	@PutMapping("/password")
+	public ResponseEntity<Void> changePassword(@AuthenticationPrincipal UserPrincipal userPrincipal,
+											   @RequestBody PasswordChangeRequest request){
+		System.out.println(request);
+		userService.changePassword(userPrincipal.getId(),request);
+		return ResponseEntity.noContent().build();
+	}
+
 }

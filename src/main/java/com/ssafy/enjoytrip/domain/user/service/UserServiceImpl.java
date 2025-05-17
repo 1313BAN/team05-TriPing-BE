@@ -1,5 +1,6 @@
 package com.ssafy.enjoytrip.domain.user.service;
 
+import com.ssafy.enjoytrip.domain.user.dto.PasswordChangeRequest;
 import com.ssafy.enjoytrip.domain.user.dto.UserIdResponse;
 import com.ssafy.enjoytrip.domain.user.exception.UserException;
 import com.ssafy.enjoytrip.exception.ErrorCode;
@@ -54,6 +55,7 @@ public class UserServiceImpl implements UserService {
 		}
 		existing.setName(updatedData.getName());
 		existing.setEmail(updatedData.getEmail());
+		existing.setNickname(updatedData.getNickname());
 
 		// ✅ 비밀번호가 null 또는 공백이 아닐 경우에만 암호화
 		if (updatedData.getPassword() != null && !updatedData.getPassword().isBlank()) {
@@ -85,4 +87,32 @@ public class UserServiceImpl implements UserService {
 			}
 			return user;
 		}
+
+	@Override
+	public void changePassword(Long userId, PasswordChangeRequest request){
+		User existing = userMapper.selectUserById(userId);
+		//1.사용자 조회
+		if(existing == null){
+			throw new UserException(ErrorCode.USER_NOT_FOUND);
+		}
+
+		//2. 현재 비밀번호 일치 여부 확인
+		boolean isMatched = passwordEncoder.matches(request.getCurrentPassword(), existing.getPassword());
+		if(!isMatched){
+			throw new UserException(ErrorCode.INVALID_PASSWORD);
+		}
+
+		//3.  새 비밀번호 유효성 검사(정규식 기반)
+		if (!ValidUtil.isValidPassword(request.getNewPassword())){
+			throw new UserException(ErrorCode.INVALID_FORMAT);
+		}
+
+		System.out.println(request.getNewPassword());
+		// 4. 새 비밀번호 암호화
+		String encodedPassword = passwordEncoder.encode(request.getNewPassword());
+
+		// 5. DB 업데이트
+		userMapper.updatePasswordById(userId, encodedPassword);
+	}
+
 }
