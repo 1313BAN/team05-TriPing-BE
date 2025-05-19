@@ -25,8 +25,10 @@
         SET
             name = #{name},
             email = #{email},
-            password = #{password},
             nickname = #{nickname}
+            <if test="password != null and password != ''">
+                , password = #{password}
+            </if>
         WHERE id = #{id}
     </update>
 

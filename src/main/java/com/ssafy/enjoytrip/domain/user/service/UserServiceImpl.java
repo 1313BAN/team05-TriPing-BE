@@ -50,24 +50,24 @@ public class UserServiceImpl implements UserService {
 			throw new UserException(ErrorCode.USER_NOT_FOUND);
 		}
 
-		if (!ValidUtil.isValidPassword(updatedData.getPassword())) {
-			throw new UserException(ErrorCode.INVALID_FORMAT);
-		}
 		existing.setName(updatedData.getName());
 		existing.setEmail(updatedData.getEmail());
 		existing.setNickname(updatedData.getNickname());
 
-		// ✅ 비밀번호가 null 또는 공백이 아닐 경우에만 암호화
+		// ✅ 여기 조건이 가장 중요함
 		if (updatedData.getPassword() != null && !updatedData.getPassword().isBlank()) {
+			if (!ValidUtil.isValidPassword(updatedData.getPassword())) {
+				throw new UserException(ErrorCode.INVALID_FORMAT);  // ← ❗이게 여기 안으로 들어가야만 함
+			}
+
 			String encryptedPassword = passwordEncoder.encode(updatedData.getPassword());
 			existing.setPassword(encryptedPassword);
 		}
 
-
-
 		userMapper.updateUser(existing);
 		return new UserIdResponse(existing.getId());
 	}
+
 
 	@Override
 	public void deleteUser(Long userId) {
