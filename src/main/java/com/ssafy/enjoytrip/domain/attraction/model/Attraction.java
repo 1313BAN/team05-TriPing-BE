@@ -26,4 +26,5 @@ public class Attraction {
     private String addr2;            // 주소2
     private String homepage;         // 홈페이지
     private String overview;         // 설명
+    private Long visitCount;         // 조회수
 }
