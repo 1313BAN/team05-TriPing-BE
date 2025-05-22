@@ -60,7 +60,9 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(
                                 new AntPathRequestMatcher("/auth/**"),
-                                new AntPathRequestMatcher("/attraction/**")
+                                new AntPathRequestMatcher("/attraction/**"),
+                                new AntPathRequestMatcher("/swagger-ui/**"),
+                                new AntPathRequestMatcher("/v3/**")
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
