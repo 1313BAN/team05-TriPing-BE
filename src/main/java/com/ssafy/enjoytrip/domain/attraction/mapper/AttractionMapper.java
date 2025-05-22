@@ -16,7 +16,7 @@ public interface AttractionMapper {
 
     AttractionPagingDTO getAllByPage(@Param("page") int page);
 
-    Attraction getById(@Param("id") int id);
+    Attraction selectByNo(@Param("no") int no);
 
     AttractionPagingDTO getWithContentTypeByPage(@Param("contentType") int contentType, @Param("page") int page);
 

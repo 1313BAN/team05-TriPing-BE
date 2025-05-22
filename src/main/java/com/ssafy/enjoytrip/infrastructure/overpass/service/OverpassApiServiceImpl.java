@@ -64,25 +64,31 @@ class OverpassApiServiceImpl implements OverpassApiService {
     @Override
     public String normalizeToGeoJson(String overpassJson, BigDecimal refLat, BigDecimal refLng) {
         try {
-            ArrayNode elements = (ArrayNode) mapper.readTree(overpassJson).path("elements");
-            int count = elements.size();
+            ArrayNode elements = null;
+            int count = 0;
 
-            // 응답 수에 따라 fallback 반경 결정
+            if (overpassJson != null) {
+                elements = (ArrayNode) mapper.readTree(overpassJson).path("elements");
+                count = elements.size();
+            }
+
+            // fallback 반경 계산
             double fallbackRadius = (count == 1) ? 50 : (count <= 3) ? 30 : 15;
-            if (count == 0) return createFallbackCircle(refLat, refLng, fallbackRadius, 64);
 
-            // 중심점 기준 가장 가까운 요소 선택
+            // 유효한 요소가 없거나 파싱 실패 시 fallback
+            if (elements == null || count == 0) {
+                log.warn("Overpass 요소 없음 또는 응답이 null. fallback 원형 생성 실행");
+                return createFallbackCircle(refLat, refLng, fallbackRadius, 64);
+            }
+
             JsonNode target = selectClosestElement(elements, refLat, refLng);
             if (target == null) return createFallbackCircle(refLat, refLng, fallbackRadius, 64);
 
             Geometry resultGeometry = null;
             String type = target.path("type").asText();
 
-            // relation 타입 처리
             if ("relation".equals(type) && target.has("members")) {
                 resultGeometry = createPolygonFromRelationMembers((ArrayNode) target.get("members"));
-
-                // way 타입 처리
             } else if ("way".equals(type) && target.has("geometry")) {
                 resultGeometry = createPolygonFromWayGeometry((ArrayNode) target.get("geometry"));
             }
@@ -90,13 +96,12 @@ class OverpassApiServiceImpl implements OverpassApiService {
             if (resultGeometry == null) return createFallbackCircle(refLat, refLng, fallbackRadius, 64);
 
             GeoJSON geoJson = new GeoJSONWriter().write(resultGeometry);
-            String jsonString = mapper.writeValueAsString(geoJson);
-            // log.debug("GeoJSON 변환 결과: {}", jsonString);
-            return jsonString;
+            return mapper.writeValueAsString(geoJson);
 
         } catch (Exception e) {
             log.error("GeoJSON 변환 실패: {}", e.getMessage(), e);
             return createFallbackCircle(refLat, refLng, 50, 64);
         }
     }
+
 }

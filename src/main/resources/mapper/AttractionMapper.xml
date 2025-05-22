@@ -14,9 +14,9 @@
         LIMIT 10 OFFSET #{page}
     </select>
 
-    <select id="getById" resultType="com.ssafy.enjoytrip.domain.attraction.model.Attraction">
+    <select id="selectByNo" resultType="com.ssafy.enjoytrip.domain.attraction.model.Attraction">
         SELECT * FROM attractions
-        WHERE no = #{id}
+        WHERE no = #{no}
     </select>
 
     <select id="getWithContentTypeByPage" resultType="com.ssafy.enjoytrip.domain.attraction.model.Attraction">

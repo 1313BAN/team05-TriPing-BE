@@ -1,6 +1,7 @@
 package com.ssafy.enjoytrip.domain.attraction.service;
 
 import com.ssafy.enjoytrip.domain.attraction.dto.AttractionPolygonDTO;
+import com.ssafy.enjoytrip.domain.attraction.exception.AttractionException;
 import com.ssafy.enjoytrip.domain.attraction.model.Attraction;
 import com.ssafy.enjoytrip.domain.attraction.dto.AttractionPagingDTO;
 import com.ssafy.enjoytrip.domain.attraction.dto.AttractionMarkerDTO;
@@ -15,6 +16,8 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.util.*;
+
+import static com.ssafy.enjoytrip.exception.ErrorCode.ATTRACTION_NOT_FOUND;
 import static com.ssafy.enjoytrip.util.GeometryUtil.isInsidePolygon;
 
 @Service
@@ -41,7 +44,11 @@ public class AttractionServiceImpl implements AttractionService {
 
     @Override
     public Attraction getAttraction(int no) {
-        return attractionMapper.getById(no);
+        Attraction attraction = attractionMapper.selectByNo(no);
+        if (attraction == null) {
+            throw new AttractionException(ATTRACTION_NOT_FOUND);
+        }
+        return attraction;
     }
 
     @Override
@@ -169,7 +176,7 @@ public class AttractionServiceImpl implements AttractionService {
                     continue;
                 }
             } else {
-                System.out.println("캐시 hit: "+ attraction.getTitle());
+                System.out.println("캐시 hit: " + attraction.getTitle());
             }
 
             if (isInsidePolygon(polygonJson, lat, lng)) {
@@ -182,7 +189,6 @@ public class AttractionServiceImpl implements AttractionService {
                 );
             }
         }
-
         return null;
     }
 }

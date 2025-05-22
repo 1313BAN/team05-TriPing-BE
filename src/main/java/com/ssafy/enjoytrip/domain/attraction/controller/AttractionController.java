@@ -54,8 +54,15 @@ public class AttractionController {
     ) {
         AttractionPolygonDTO dto = attractionService.checkIfEntered(lat, lng);
         if (dto == null) {
-            return ResponseEntity.noContent().build(); // 204
+            return ResponseEntity.noContent().build();
         }
-        return ResponseEntity.ok(dto); // 200 + body
+        return ResponseEntity.ok(dto);
+    }
+
+    // 상세 조회
+    @GetMapping("/{no}")
+    public ResponseEntity<Attraction> getAttractionByNo(@PathVariable int no) {
+        Attraction attraction = attractionService.getAttraction(no);
+        return ResponseEntity.ok(attraction);
     }
 }
