@@ -23,6 +23,14 @@ spring:
     restart:
       enabled: true
 
+  # Spring AI
+  ai:
+    openai:
+      api-key: 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
+      base-url: https://api.openai.com/v1
+      chat:
+        model: gpt-4o
+
 
 mybatis:
   mapper-locations: classpath:/mapper/**/*.xml
