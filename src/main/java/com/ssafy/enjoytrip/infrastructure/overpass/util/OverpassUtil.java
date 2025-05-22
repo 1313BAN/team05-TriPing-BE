@@ -39,16 +39,24 @@ public class OverpassUtil {
     }
 
     public static String createFallbackCircle(BigDecimal centerLat, BigDecimal centerLon, double radiusMeters, int points) {
-        double radiusDegrees = radiusMeters / 111_000.0;
+        double lat = centerLat.doubleValue();
+        double lon = centerLon.doubleValue();
+
+        // 위도 방향: 1도 ≈ 111,000m
+        double radiusLatDegrees = radiusMeters / 111_000.0;
+
+        // 경도 방향: 위도에 따라 1도 ≈ 111,320 * cos(lat)
+        double radiusLonDegrees = radiusMeters / (111_320.0 * Math.cos(Math.toRadians(lat)));
+
         Coordinate[] coords = new Coordinate[points + 1];
 
         for (int i = 0; i < points; i++) {
             double angle = 2 * Math.PI * i / points;
-            double dx = radiusDegrees * Math.cos(angle);
-            double dy = radiusDegrees * Math.sin(angle);
-            coords[i] = new Coordinate(centerLon.doubleValue() + dx, centerLat.doubleValue() + dy);
+            double dx = radiusLonDegrees * Math.cos(angle);
+            double dy = radiusLatDegrees * Math.sin(angle);
+            coords[i] = new Coordinate(lon + dx, lat + dy);
         }
-        coords[points] = coords[0];
+        coords[points] = coords[0]; // 시작점으로 되돌아와 닫힌 도형 만들기
 
         LinearRing ring = geometryFactory.createLinearRing(coords);
         Polygon circle = geometryFactory.createPolygon(ring);
@@ -62,6 +70,7 @@ public class OverpassUtil {
             return null;
         }
     }
+
 
     public static Coordinate[] toCoordinateArray(ArrayNode geometry) {
         Coordinate[] coords = new Coordinate[geometry.size()];

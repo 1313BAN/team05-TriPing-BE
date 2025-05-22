@@ -10,8 +10,10 @@ import com.ssafy.enjoytrip.domain.attraction.mapper.ContentTypeMapper;
 import com.ssafy.enjoytrip.infrastructure.overpass.service.OverpassApiService;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
+import java.time.Duration;
 import java.util.*;
 import static com.ssafy.enjoytrip.util.GeometryUtil.isInsidePolygon;
 
@@ -22,8 +24,12 @@ public class AttractionServiceImpl implements AttractionService {
     private final AttractionMapper attractionMapper;
     private final ContentTypeMapper contentTypeMapper;
     private final OverpassApiService overpassApiService;
-
+    private final RedisTemplate<String, String> redisTemplate;
     private final Map<String, Integer> nameMap = new HashMap<>();
+
+    private String buildPolygonKey(Integer contentId) {
+        return "polygon:" + contentId;
+    }
 
     @PostConstruct
     public void initNameMap() {
@@ -136,30 +142,34 @@ public class AttractionServiceImpl implements AttractionService {
 
     @Override
     public AttractionPolygonDTO checkIfEntered(BigDecimal lat, BigDecimal lng) {
-        // 반경 500m 내 rough filtering
         List<Attraction> nearby = attractionMapper.findNearbyAttractions(lat, lng, 500);
 
         for (Attraction attraction : nearby) {
-            // polygon 캐시 조회
-            String polygonJson = loadPolygonJson(attraction.getContentId());
+            String key = buildPolygonKey(attraction.getContentId());
+            String polygonJson = redisTemplate.opsForValue().get(key);
 
-            // 캐시 없는 경우 → Overpass API로 조회
+            // Redis에 없으면 Overpass에서 가져옴
             if (polygonJson == null) {
-                String rawOverpassJson = overpassApiService.fetchPolygon(attraction.getTitle(), attraction.getLatitude(), attraction.getLongitude());
-                System.out.println(rawOverpassJson);
+                System.out.println("캐싱에 없음: " + attraction.getTitle());
+                String rawOverpassJson = overpassApiService.fetchPolygon(
+                        attraction.getTitle(),
+                        attraction.getLatitude(),
+                        attraction.getLongitude()
+                );
 
                 polygonJson = overpassApiService.normalizeToGeoJson(
                         rawOverpassJson,
                         attraction.getLatitude(),
                         attraction.getLongitude()
                 );
-                System.out.println(polygonJson);
+
                 if (polygonJson != null) {
-                    // Overpass에서 얻어온 값 캐싱
-                    // polygonCache.put(attraction.getContentId(), polygonJson);
+                    redisTemplate.opsForValue().set(key, polygonJson, Duration.ofDays(14)); // 14일 캐싱
                 } else {
-                    continue; // polygon 얻지 못했으면 skip
+                    continue;
                 }
+            } else {
+                System.out.println("캐시 hit: "+ attraction.getTitle());
             }
 
             if (isInsidePolygon(polygonJson, lat, lng)) {
@@ -173,13 +183,6 @@ public class AttractionServiceImpl implements AttractionService {
             }
         }
 
-        // 진입한 관광지가 없으면 null 반환
-        return null;
-    }
-
-    // 임시 polygon 로딩 로직
-    private String loadPolygonJson(Integer contentId) {
-        // TODO: Redis 캐시 또는 정적 파일/DB 등에서 polygon 로딩
         return null;
     }
 }

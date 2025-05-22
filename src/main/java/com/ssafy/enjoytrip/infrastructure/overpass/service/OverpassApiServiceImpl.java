@@ -68,12 +68,12 @@ class OverpassApiServiceImpl implements OverpassApiService {
             int count = elements.size();
 
             // 응답 수에 따라 fallback 반경 결정
-            double fallbackRadius = (count <= 1) ? 100 : (count <= 7) ? 50 : 30;
-            if (count == 0) return createFallbackCircle(refLat, refLng, fallbackRadius, 32);
+            double fallbackRadius = (count == 1) ? 50 : (count <= 3) ? 30 : 15;
+            if (count == 0) return createFallbackCircle(refLat, refLng, fallbackRadius, 64);
 
             // 중심점 기준 가장 가까운 요소 선택
             JsonNode target = selectClosestElement(elements, refLat, refLng);
-            if (target == null) return createFallbackCircle(refLat, refLng, fallbackRadius, 32);
+            if (target == null) return createFallbackCircle(refLat, refLng, fallbackRadius, 64);
 
             Geometry resultGeometry = null;
             String type = target.path("type").asText();
@@ -87,16 +87,16 @@ class OverpassApiServiceImpl implements OverpassApiService {
                 resultGeometry = createPolygonFromWayGeometry((ArrayNode) target.get("geometry"));
             }
 
-            if (resultGeometry == null) return createFallbackCircle(refLat, refLng, fallbackRadius, 32);
+            if (resultGeometry == null) return createFallbackCircle(refLat, refLng, fallbackRadius, 64);
 
             GeoJSON geoJson = new GeoJSONWriter().write(resultGeometry);
             String jsonString = mapper.writeValueAsString(geoJson);
-            log.debug("GeoJSON 변환 결과: {}", jsonString);
+            // log.debug("GeoJSON 변환 결과: {}", jsonString);
             return jsonString;
 
         } catch (Exception e) {
             log.error("GeoJSON 변환 실패: {}", e.getMessage(), e);
-            return createFallbackCircle(refLat, refLng, 50, 32);
+            return createFallbackCircle(refLat, refLng, 50, 64);
         }
     }
 }
