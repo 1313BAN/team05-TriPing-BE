@@ -9,8 +9,9 @@ import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.stereotype.Service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.prompt.Prompt;
+import org.springframework.ai.chat.prompt.PromptTemplate;
 
-
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -18,11 +19,12 @@ import java.util.Map;
 @Service
 @RequiredArgsConstructor
 public class GptServiceImpl implements GptService {
-
     private final ChatClient chatClient;
     private final GptPromptUtil gptPromptUtil;
     private final ObjectMapper objectMapper = new ObjectMapper();
-
+    Map<String, Object> promptData = new HashMap<>();
+    PromptTemplate promptTemplate = new PromptTemplate("dkdk");
+    Prompt prompt = promptTemplate.create(promptData);
 
     @Override
     public GptGuideResponse getGuideByTitleAndAddress(String title, String address) {
