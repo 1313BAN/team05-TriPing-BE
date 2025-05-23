@@ -89,5 +89,9 @@
         ORDER BY distance ASC
     </select>
 
-
+    <select id="findSubAttractions" resultType="com.ssafy.enjoytrip.domain.attraction.model.SubAttraction">
+        SELECT *
+        FROM sub_attractions
+        WHERE attraction_no = #{attractionNo}
+    </select>
 </mapper>

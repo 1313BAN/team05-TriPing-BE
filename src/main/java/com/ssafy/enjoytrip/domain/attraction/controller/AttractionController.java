@@ -1,6 +1,7 @@
 package com.ssafy.enjoytrip.domain.attraction.controller;
 
 import com.ssafy.enjoytrip.domain.attraction.dto.AttractionPolygonDTO;
+import com.ssafy.enjoytrip.domain.attraction.dto.SubAttractionPolygonDTO;
 import com.ssafy.enjoytrip.domain.attraction.model.Attraction;
 import com.ssafy.enjoytrip.domain.attraction.dto.AttractionMarkerDTO;
 import com.ssafy.enjoytrip.domain.attraction.service.AttractionService;
@@ -65,4 +66,11 @@ public class AttractionController {
         Attraction attraction = attractionService.getAttraction(no);
         return ResponseEntity.ok(attraction);
     }
+
+    // 하위 명소 리스트 조회
+    @GetMapping("/{no}/subs")
+    public ResponseEntity<List<SubAttractionPolygonDTO>> getSubAttractions(@PathVariable("no") int attractionNo) {
+        return ResponseEntity.ok(attractionService.getSubAttractions(attractionNo));
+    }
+
 }

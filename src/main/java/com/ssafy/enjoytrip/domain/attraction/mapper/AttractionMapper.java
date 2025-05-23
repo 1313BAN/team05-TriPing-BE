@@ -3,6 +3,7 @@ package com.ssafy.enjoytrip.domain.attraction.mapper;
 import com.ssafy.enjoytrip.domain.attraction.dto.AttractionMarkerDTO;
 import com.ssafy.enjoytrip.domain.attraction.model.Attraction;
 import com.ssafy.enjoytrip.domain.attraction.dto.AttractionPagingDTO;
+import com.ssafy.enjoytrip.domain.attraction.model.SubAttraction;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -47,4 +48,6 @@ public interface AttractionMapper {
             @Param("lng") BigDecimal lng,
             @Param("radius") int radius
     );
+
+    List<SubAttraction> findSubAttractions(@Param("attractionNo") int attractionNo);
 }
