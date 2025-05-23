@@ -16,7 +16,7 @@ spring:
 
   data:
     redis:
-      host: redis
+      host: ${REDIS_HOST}
       port: 6379
 
   devtools:
