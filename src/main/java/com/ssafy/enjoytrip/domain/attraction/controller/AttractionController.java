@@ -5,6 +5,8 @@ import com.ssafy.enjoytrip.domain.attraction.dto.SubAttractionPolygonDTO;
 import com.ssafy.enjoytrip.domain.attraction.model.Attraction;
 import com.ssafy.enjoytrip.domain.attraction.dto.AttractionMarkerDTO;
 import com.ssafy.enjoytrip.domain.attraction.service.AttractionService;
+import com.ssafy.enjoytrip.infrastructure.gpt.dto.GptGuideResponse;
+import com.ssafy.enjoytrip.infrastructure.gpt.service.GptService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +20,8 @@ import java.util.List;
 public class AttractionController {
 
     private final AttractionService attractionService;
+    private final GptService gptService;
+
 
     // 조건 검색
     @GetMapping
@@ -72,5 +76,22 @@ public class AttractionController {
     public ResponseEntity<List<SubAttractionPolygonDTO>> getSubAttractions(@PathVariable("no") int attractionNo) {
         return ResponseEntity.ok(attractionService.getSubAttractions(attractionNo));
     }
+
+    //  GPT 기반 가이드 정보 제공
+    @GetMapping("/guide/{id}")
+    public ResponseEntity<GptGuideResponse> getAttractionGuide(@PathVariable("id") int id) {
+        // 1️⃣ ID 기반으로 관광지 정보 조회
+        Attraction attraction = attractionService.getAttraction(id);
+
+        // 2️⃣ GPT에서 JSON 응답 받아서 DTO로 매핑됨
+        GptGuideResponse guideResponse = gptService.getGuideByTitleAndAddress(
+                attraction.getTitle(),
+                attraction.getAddr1()
+        );
+
+        // 3️⃣ 응답 DTO로 감싸서 프론트로 반환
+        return ResponseEntity.ok(guideResponse);
+    }
+
 
 }

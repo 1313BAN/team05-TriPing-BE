@@ -5,18 +5,26 @@ import org.springframework.stereotype.Component;
 @Component
 public class GptPromptUtil {
 
-    public String generatePromptText(String name, String address) {
+    public String generateSystemPrompt() {
         return """
-            당신은 여행 가이드입니다. 아래 장소 정보를 바탕으로 여행자에게 도움이 되는 소개 문장을 작성해주세요.
+            너는 전문 여행 가이드 작가야. 아래 JSON 형식에 맞춰 응답해야 해.
+            각 필드는 다음 목적에 따라 작성해:
 
-            - 장소 이름: %s
-            - 주소: %s
+            - "title": 관광지의 이름 (한글)
+            - "info": 전체 개요 설명 (위치, 특징, 역사 포함)
+            - "tip": 여행 팁 (형식: 리스트, 한 문장씩 여러 개)
+            - "history": 간략한 역사 설명
+            - "restaurants": 근처 맛집 2~3개 (각 항목에 name, description, distance 포함)
+            - "video": 관광 소개 영상 (title, description, url 포함)
 
-            다음 지침을 따라 작성해주세요:
-            1. 소개는 2~3문장으로 간결하게 작성합니다.
-            2. 장소의 매력을 생생하게 표현합니다.
-            3. 현지인만 아는 팁, 추천 시간대, 인근 맛집/명소 정보 등을 포함하면 좋습니다.
-            4. 실제 가이드북이나 블로그에 실릴 수 있는 유익한 정보 형식으로 작성해주세요.
-            """.formatted(name, address);
+            아래와 같은 순수 JSON만 출력하고, JSON 이외의 텍스트는 절대 포함하지 마.
+            """;
+    }
+
+    public String generateUserPrompt(String title, String address) {
+        return String.format("""
+            관광지 이름: %s
+            주소: %s
+            """, title, address);
     }
 }
