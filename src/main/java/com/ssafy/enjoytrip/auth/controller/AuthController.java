@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.net.URI;
+
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
@@ -22,7 +24,9 @@ public class AuthController {
 
     @PostMapping("/signup")
     public ResponseEntity<UserIdResponse> register(@RequestBody User user) {
-        return ResponseEntity.ok(userService.registerUser(user));
+        UserIdResponse response = userService.registerUser(user);
+        URI location = URI.create("/user/" + response.getId());
+        return ResponseEntity.created(location).body(response);
     }
 
     @PostMapping("/login")

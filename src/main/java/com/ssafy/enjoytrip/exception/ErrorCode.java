@@ -19,6 +19,8 @@ public enum ErrorCode {
     // user
     USER_NOT_FOUND(NOT_FOUND, "회원을 찾을 수 없습니다."),
     DUPLICATE_EMAIL(CONFLICT, "이미 사용 중인 이메일입니다."),
+    INVALID_PASSWORD(BAD_REQUEST, "현재 비밀번호가 일치하지 않습니다."),
+
 
     // attraction
     ATTRACTION_NOT_FOUND(NOT_FOUND, "관광지를 찾을 수 없습니다.");

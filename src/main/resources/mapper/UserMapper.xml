@@ -8,13 +8,13 @@
     <!-- 회원가입 -->
     <insert id="insertUser" parameterType="com.ssafy.enjoytrip.domain.user.model.User"
             useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO users (email, password, name)
-        VALUES (#{email}, #{password}, #{name})
+        INSERT INTO users (email, password, name, nickname)
+        VALUES (#{email}, #{password}, #{name}, #{nickname})
     </insert>
 
     <!-- 이메일로 사용자 조회 -->
     <select id="selectByEmail" resultType="com.ssafy.enjoytrip.domain.user.model.User">
-        SELECT *
+        SELECT id, email, password, name, nickname, created_at, updated_at
         FROM users
         WHERE email = #{email}
     </select>
@@ -25,7 +25,10 @@
         SET
             name = #{name},
             email = #{email},
-            password = #{password}
+            nickname = #{nickname}
+            <if test="password != null and password != ''">
+                , password = #{password}
+            </if>
         WHERE id = #{id}
     </update>
 
@@ -36,9 +39,14 @@
 
     <!-- ID로 사용자 조회 -->
     <select id="selectUserById" parameterType="long" resultType="com.ssafy.enjoytrip.domain.user.model.User">
-        SELECT *
+        SELECT id, email, password, name, nickname, created_at, updated_at
         FROM users
         WHERE id = #{id}
     </select>
-
+    <!-- 비밀번호 변경-->
+    <update id="updatePasswordById">
+        UPDATE users
+        SET password = #{password}
+        WHERE id = #{userId}
+    </update>
 </mapper>
