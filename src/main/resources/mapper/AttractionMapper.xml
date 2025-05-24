@@ -104,8 +104,9 @@
     <select id="findAttractionsWithinRadiusForRecommend"
             resultType="com.ssafy.enjoytrip.domain.attraction.dto.AttractionForRecommendDTO">
         SELECT
-        id AS no,
-        name AS title,
+        no,
+        title,
+        addr1 AS address,
         visit_count AS visitCount,
         (6371000 * ACOS(
         COS(RADIANS(#{lat})) * COS(RADIANS(latitude)) *
@@ -114,6 +115,7 @@
         )) AS distance
         FROM attractions
         HAVING distance &lt;= #{radius}
+        ORDER BY distance
     </select>
 
 </mapper>

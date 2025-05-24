@@ -17,5 +17,5 @@ public interface AttractionService {
     AttractionPolygonDTO checkIfEntered(BigDecimal lat, BigDecimal lng);
     List<SubAttractionPolygonDTO> getSubAttractions(int attractionNo);
     void increaseVisitCount(Long attractionId);
-    List<AttractionForRecommendDTO> findNearbyForRecommendation(double lat, double lng);
+    List<AttractionForRecommendDTO> findNearbyForRecommendation(BigDecimal lat, BigDecimal lng);
 }

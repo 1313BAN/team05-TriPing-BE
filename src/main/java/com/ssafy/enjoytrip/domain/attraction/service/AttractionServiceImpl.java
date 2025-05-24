@@ -241,7 +241,7 @@ public class AttractionServiceImpl implements AttractionService {
 
     // AI 추천 기능에 활용되는 주변 관광지 리스트 + 각 거리계산
     @Override
-    public List<AttractionForRecommendDTO> findNearbyForRecommendation(double lat, double lng) {
+    public List<AttractionForRecommendDTO> findNearbyForRecommendation(BigDecimal lat, BigDecimal lng) {
         double radius = INITIAL_RADIUS;
 
         Set<Long> visitedIds = new HashSet<>();

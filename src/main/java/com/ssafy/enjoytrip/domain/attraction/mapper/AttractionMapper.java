@@ -56,8 +56,8 @@ public interface AttractionMapper {
 
     // AI 추천용 리스트 반환 (사용자 거리 + 반경 기반)
     List<AttractionForRecommendDTO> findAttractionsWithinRadiusForRecommend(
-            @Param("lat") double lat,
-            @Param("lng") double lng,
+            @Param("lat") BigDecimal lat,
+            @Param("lng") BigDecimal lng,
             @Param("radius") double radius
     );
 }
