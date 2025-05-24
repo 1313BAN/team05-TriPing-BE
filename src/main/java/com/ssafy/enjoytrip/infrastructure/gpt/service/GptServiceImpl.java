@@ -5,11 +5,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssafy.enjoytrip.infrastructure.gpt.dto.GptGuideResponse;
 import com.ssafy.enjoytrip.infrastructure.gpt.util.GptPromptUtil;
 import lombok.RequiredArgsConstructor;
-import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.stereotype.Service;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.prompt.Prompt;
-import org.springframework.ai.chat.prompt.PromptTemplate;
+
+import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.List;
@@ -19,49 +20,52 @@ import java.util.Map;
 @Service
 @RequiredArgsConstructor
 public class GptServiceImpl implements GptService {
+
     private final ChatClient chatClient;
     private final GptPromptUtil gptPromptUtil;
     private final ObjectMapper objectMapper = new ObjectMapper();
-    Map<String, Object> promptData = new HashMap<>();
-    PromptTemplate promptTemplate = new PromptTemplate("dkdk");
-    Prompt prompt = promptTemplate.create(promptData);
 
     @Override
     public GptGuideResponse getGuideByTitleAndAddress(String title, String address) {
-        String systemPrompt = gptPromptUtil.generateSystemPrompt();
-        String userPrompt = gptPromptUtil.generateUserPrompt(title, address);
+
+        String fullPrompt = null;
+        String gptResponse = null;
 
         try {
-            // 💬 system + user 프롬프트 구성
-            Prompt prompt = Prompt.builder()
-                    .addMessage("system", systemPrompt)
-                    .addMessage("user", userPrompt)
-                    .build();
 
-            // 🧠 GPT 호출
-            String gptResponse = chatClient
-                    .prompt()
+            // 프롬프트 생성
+            String systemPrompt = gptPromptUtil.generateSystemPrompt();
+            String userPrompt = gptPromptUtil.generateUserPrompt(title, address);
+            fullPrompt = systemPrompt + "\n" + userPrompt;
+
+            log.debug("📤 생성된 프롬프트:\n{}", fullPrompt);
+
+            // Prompt 객체 생성
+            Prompt prompt = new Prompt(fullPrompt);
+
+            // GPT 호출
+            gptResponse = chatClient
                     .prompt(prompt)
                     .call()
                     .content();
 
-            // 📦 JSON → Map 변환
+            log.debug("📥 GPT 응답 원문:\n{}", gptResponse);
+
+            // JSON → Map 파싱
             Map<String, Object> map = objectMapper.readValue(gptResponse, new TypeReference<>() {});
 
-            // ✅ DTO 생성 및 반환
-            return GptGuideResponse.builder()
-                    .title((String) map.get("title"))
-                    .tip((String) map.get("tip"))
-                    .info((String) map.get("info"))
-                    .history((String) map.get("history"))
-                    .restaurants((List<Map<String, Object>>) map.get("restaurants"))
-                    .video((Map<String, Object>) map.get("video"))
-                    .build();
+            // DTO 생성
+            return objectMapper.readValue(gptResponse, GptGuideResponse.class);
+
 
         } catch (Exception e) {
-            log.error("❌ GPT 응답 파싱 실패", e);
+            log.error("❌ GPT 응답 파싱 실패");
+            log.error("🧾 요청 프롬프트:\n{}", fullPrompt);
+            log.error("📥 GPT 응답 (에러 발생 전 수신된 응답):\n{}", gptResponse);
+            log.error("📛 예외 메시지: {}", e.getMessage(), e);
             throw new RuntimeException("GPT 응답 파싱 실패", e);
         }
     }
+
 
 }

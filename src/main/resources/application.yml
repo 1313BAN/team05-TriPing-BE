@@ -27,7 +27,7 @@ spring:
   ai:
     openai:
       api-key: ${OPENAI_SECRET}
-      base-url: https://api.openai.com/v1
+      base-url: https://api.openai.com
       chat:
         model: gpt-4o
 

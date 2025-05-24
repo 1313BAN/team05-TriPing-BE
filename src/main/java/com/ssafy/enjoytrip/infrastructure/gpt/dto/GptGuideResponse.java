@@ -14,7 +14,7 @@ import java.util.Map;
 @AllArgsConstructor
 public class GptGuideResponse {
     private String title;
-    private String tip;
+    private List<String> tip; // ✅ 수정된 부분
     private String info;
     private String history;
 

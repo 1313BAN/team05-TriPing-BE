@@ -18,6 +18,7 @@ public class GptPromptUtil {
             - "video": 관광 소개 영상 (title, description, url 포함)
 
             아래와 같은 순수 JSON만 출력하고, JSON 이외의 텍스트는 절대 포함하지 마.
+            JSON 응답 외에 어떤 말도 하지 마. 코드블럭이나 설명도 안 됨.
             """;
     }
 
@@ -25,6 +26,8 @@ public class GptPromptUtil {
         return String.format("""
             관광지 이름: %s
             주소: %s
+            
+            위 관광지에 대한 가이드를 반드시 JSON 형식으로 작성해주세요.JSON 응답 외에 어떤 말도 하지 마. 코드블럭이나 설명도 안 됨.
             """, title, address);
     }
 }
