@@ -1,6 +1,7 @@
 package com.ssafy.enjoytrip.domain.visitlog.service;
 
 import com.ssafy.enjoytrip.domain.attraction.mapper.AttractionMapper;
+import com.ssafy.enjoytrip.domain.attraction.service.AttractionService;
 import com.ssafy.enjoytrip.domain.visitlog.dto.VisitLogCreateRequest;
 import com.ssafy.enjoytrip.domain.visitlog.dto.VisitLogCreatedResponse;
 import com.ssafy.enjoytrip.domain.visitlog.exception.VisitLogException;
@@ -17,7 +18,7 @@ import static com.ssafy.enjoytrip.exception.ErrorCode.*;
 public class VisitLogServiceImpl implements VisitLogService {
 
     private final VisitLogMapper visitLogMapper;
-    private final AttractionMapper attractionMapper;
+    private final AttractionService attractionService;
 
     @Override
     @Transactional
@@ -35,7 +36,7 @@ public class VisitLogServiceImpl implements VisitLogService {
                 .build();
 
         visitLogMapper.insertVisitLog(log);
-        attractionMapper.increaseVisitCount(request.getAttractionNo());
+        attractionService.increaseVisitCount(request.getAttractionNo());
         return new VisitLogCreatedResponse(log.getId());
     }
 

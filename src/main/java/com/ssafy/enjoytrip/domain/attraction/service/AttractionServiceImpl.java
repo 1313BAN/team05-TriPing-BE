@@ -229,4 +229,9 @@ public class AttractionServiceImpl implements AttractionService {
 
         return result;
     }
+
+    @Override
+    public void increaseVisitCount(Long attractionId) {
+        attractionMapper.increaseVisitCount(attractionId);
+    }
 }

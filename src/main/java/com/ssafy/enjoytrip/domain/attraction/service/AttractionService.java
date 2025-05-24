@@ -16,5 +16,5 @@ public interface AttractionService {
     List<AttractionMarkerDTO> getMarkersInViewport(BigDecimal lat1, BigDecimal lat2, BigDecimal lng1, BigDecimal lng2, Integer zoomLevel);
     AttractionPolygonDTO checkIfEntered(BigDecimal lat, BigDecimal lng);
     List<SubAttractionPolygonDTO> getSubAttractions(int attractionNo);
-
+    void increaseVisitCount(Long attractionId);
 }
