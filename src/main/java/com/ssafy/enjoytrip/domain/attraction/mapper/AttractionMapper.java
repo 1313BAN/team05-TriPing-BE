@@ -1,5 +1,6 @@
 package com.ssafy.enjoytrip.domain.attraction.mapper;
 
+import com.ssafy.enjoytrip.domain.attraction.dto.AttractionForRecommendDTO;
 import com.ssafy.enjoytrip.domain.attraction.dto.AttractionMarkerDTO;
 import com.ssafy.enjoytrip.domain.attraction.model.Attraction;
 import com.ssafy.enjoytrip.domain.attraction.dto.AttractionPagingDTO;
@@ -52,4 +53,11 @@ public interface AttractionMapper {
     List<SubAttraction> findSubAttractions(@Param("attractionNo") int attractionNo);
 
     void increaseVisitCount(@Param("attractionNo") Long attractionNo);
+
+    // AI 추천용 리스트 반환 (사용자 거리 + 반경 기반)
+    List<AttractionForRecommendDTO> findAttractionsWithinRadiusForRecommend(
+            @Param("lat") double lat,
+            @Param("lng") double lng,
+            @Param("radius") double radius
+    );
 }

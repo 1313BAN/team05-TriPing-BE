@@ -100,4 +100,20 @@
         SET visit_count = visit_count + 1
         WHERE no = #{attractionNo}
     </update>
+
+    <select id="findAttractionsWithinRadiusForRecommend"
+            resultType="com.ssafy.enjoytrip.domain.attraction.dto.AttractionForRecommendDTO">
+        SELECT
+        id AS no,
+        name AS title,
+        visit_count AS visitCount,
+        (6371000 * ACOS(
+        COS(RADIANS(#{lat})) * COS(RADIANS(latitude)) *
+        COS(RADIANS(longitude) - RADIANS(#{lng})) +
+        SIN(RADIANS(#{lat})) * SIN(RADIANS(latitude))
+        )) AS distance
+        FROM attractions
+        HAVING distance &lt;= #{radius}
+    </select>
+
 </mapper>

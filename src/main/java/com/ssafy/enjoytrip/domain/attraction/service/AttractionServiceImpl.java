@@ -29,6 +29,10 @@ public class AttractionServiceImpl implements AttractionService {
     private final RedisTemplate<String, String> redisTemplate;
     private final Map<String, Integer> nameMap = new HashMap<>();
 
+    private static final int TARGET_COUNT = 15;
+    private static final double INITIAL_RADIUS = 1000;  // 1km
+    private static final double MAX_RADIUS = 20000;
+
     @PostConstruct
     public void initNameMap() {
         List<Attraction> list = attractionMapper.getAll();
@@ -233,5 +237,30 @@ public class AttractionServiceImpl implements AttractionService {
     @Override
     public void increaseVisitCount(Long attractionId) {
         attractionMapper.increaseVisitCount(attractionId);
+    }
+
+    // AI 추천 기능에 활용되는 주변 관광지 리스트 + 각 거리계산
+    @Override
+    public List<AttractionForRecommendDTO> findNearbyForRecommendation(double lat, double lng) {
+        double radius = INITIAL_RADIUS;
+
+        Set<Long> visitedIds = new HashSet<>();
+        List<AttractionForRecommendDTO> total = new ArrayList<>();
+
+        while (radius <= MAX_RADIUS) {
+            List<AttractionForRecommendDTO> candidates =
+                    attractionMapper.findAttractionsWithinRadiusForRecommend(lat, lng, radius);
+
+            for (AttractionForRecommendDTO dto : candidates) {
+                if (visitedIds.add(dto.getNo())) total.add(dto); // 새로운 no면 추가
+            }
+
+            if (total.size() >= TARGET_COUNT) break;
+            radius *= 2;
+        }
+
+        return total.stream()
+                .limit(TARGET_COUNT)
+                .toList();
     }
 }
