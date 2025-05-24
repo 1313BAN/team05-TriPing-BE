@@ -10,8 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Duration;
-import java.time.LocalDate;
+import java.time.*;
 
 import static com.ssafy.enjoytrip.exception.ErrorCode.*;
 
@@ -27,24 +26,33 @@ public class VisitLogServiceImpl implements VisitLogService {
     @Override
     @Transactional
     public VisitLogCreatedResponse createVisitLog(Long userId, VisitLogCreateRequest request) {
-        if (request.getExitedAt().isBefore(request.getEnteredAt())) {
+        LocalDateTime enteredAt = Instant.ofEpochMilli(request.getEnteredAt())
+                .atZone(ZoneId.systemDefault())
+                .toLocalDateTime();
+
+        LocalDateTime exitedAt = Instant.ofEpochMilli(request.getExitedAt())
+                .atZone(ZoneId.systemDefault())
+                .toLocalDateTime();
+
+        if (exitedAt.isBefore(enteredAt)) {
             throw new VisitLogException(INVALID_TIME);
         }
 
-        long minutes = Duration.between(request.getEnteredAt(), request.getExitedAt()).toMinutes();
-        if (minutes < MIN_REQUIRED_STAY_MINUTES) {  // 5분 미만의 체류시간인 경우
-            throw new VisitLogException(STAY_TIME_NOT_ENOUGH);
-        }
+        long minutes = Duration.between(enteredAt, exitedAt).toMinutes();
+        // 테스트 환경 예외처리 제거
+//        if (minutes < MIN_REQUIRED_STAY_MINUTES) {  // 5분 미만의 체류시간인 경우
+//            throw new VisitLogException(STAY_TIME_NOT_ENOUGH);
+//        }
 
-        if (visitLogMapper.existsByUserIdAndAttractionNoAndDate(userId, request.getAttractionNo(), request.getEnteredAt().toLocalDate())) {
+        if (visitLogMapper.existsByUserIdAndAttractionNoAndDate(userId, request.getAttractionNo(), enteredAt.toLocalDate())) {
             throw new VisitLogException(ALREADY_VISITED_TODAY);
         }
 
         VisitLog log = VisitLog.builder()
                 .userId(userId)
                 .attractionNo(request.getAttractionNo())
-                .enteredAt(request.getEnteredAt())
-                .exitedAt(request.getExitedAt())
+                .enteredAt(enteredAt)
+                .exitedAt(exitedAt)
                 .preference(request.getPreference())
                 .build();
 

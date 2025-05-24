@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 @Getter
 public class VisitLogCreateRequest {
     private Long attractionNo;
-    private LocalDateTime enteredAt;
-    private LocalDateTime exitedAt;
+    private Long enteredAt;
+    private Long exitedAt;
     private Boolean preference;
 }
