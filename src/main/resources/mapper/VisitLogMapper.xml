@@ -24,4 +24,15 @@
         )
     </select>
 
+    <select id="existsByUserIdAndAttractionNoAndDate" resultType="boolean">
+        SELECT EXISTS (
+        SELECT 1
+        FROM visit_log
+        WHERE user_id = #{userId}
+        AND attraction_no = #{attractionNo}
+        AND DATE(entered_at) = #{date}
+        )
+    </select>
+
+
 </mapper>

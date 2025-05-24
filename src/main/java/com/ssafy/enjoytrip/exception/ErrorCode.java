@@ -28,7 +28,9 @@ public enum ErrorCode {
     // visitLog
     INVALID_TIME(BAD_REQUEST, "퇴장시간은 입장시간보다 빠를 수 없습니다."),
     VISITLOG_NOT_FOUND(NOT_FOUND, "방문 기록을 찾을 수 없습니다."),
-    INVALID_PREFERENCE(BAD_REQUEST, "선호도는 1~10 사이의 값이어야 합니다.");
+    INVALID_PREFERENCE(BAD_REQUEST, "선호도는 1~10 사이의 값이어야 합니다."),
+    ALREADY_VISITED_TODAY(CONFLICT, "같은 날짜에 방문한 기록이 있는 관광지입니다."),
+    STAY_TIME_NOT_ENOUGH(BAD_REQUEST, "체류시간이 5분 이상이어야 합니다.");
 
     private final HttpStatus status;
     private final String message;

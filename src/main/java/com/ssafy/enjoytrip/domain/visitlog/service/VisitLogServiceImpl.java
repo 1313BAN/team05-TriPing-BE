@@ -1,6 +1,5 @@
 package com.ssafy.enjoytrip.domain.visitlog.service;
 
-import com.ssafy.enjoytrip.domain.attraction.mapper.AttractionMapper;
 import com.ssafy.enjoytrip.domain.attraction.service.AttractionService;
 import com.ssafy.enjoytrip.domain.visitlog.dto.VisitLogCreateRequest;
 import com.ssafy.enjoytrip.domain.visitlog.dto.VisitLogCreatedResponse;
@@ -11,6 +10,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
+import java.time.LocalDate;
+
 import static com.ssafy.enjoytrip.exception.ErrorCode.*;
 
 @Service
@@ -20,11 +22,22 @@ public class VisitLogServiceImpl implements VisitLogService {
     private final VisitLogMapper visitLogMapper;
     private final AttractionService attractionService;
 
+    private static final int MIN_REQUIRED_STAY_MINUTES = 5;
+
     @Override
     @Transactional
     public VisitLogCreatedResponse createVisitLog(Long userId, VisitLogCreateRequest request) {
         if (request.getExitedAt().isBefore(request.getEnteredAt())) {
             throw new VisitLogException(INVALID_TIME);
+        }
+
+        long minutes = Duration.between(request.getEnteredAt(), request.getExitedAt()).toMinutes();
+        if (minutes < MIN_REQUIRED_STAY_MINUTES) {  // 5분 미만의 체류시간인 경우
+            throw new VisitLogException(STAY_TIME_NOT_ENOUGH);
+        }
+
+        if (visitLogMapper.existsByUserIdAndAttractionNoAndDate(userId, request.getAttractionNo(), request.getEnteredAt().toLocalDate())) {
+            throw new VisitLogException(ALREADY_VISITED_TODAY);
         }
 
         VisitLog log = VisitLog.builder()
