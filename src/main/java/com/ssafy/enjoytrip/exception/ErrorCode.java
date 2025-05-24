@@ -23,8 +23,11 @@ public enum ErrorCode {
 
 
     // attraction
-    ATTRACTION_NOT_FOUND(NOT_FOUND, "관광지를 찾을 수 없습니다.");
+    ATTRACTION_NOT_FOUND(NOT_FOUND, "관광지를 찾을 수 없습니다."),
 
+    // visitLog
+    INVALID_TIME(BAD_REQUEST, "퇴장시간은 입장시간보다 빠를 수 없습니다."),
+    VISITLOG_NOT_FOUND(NOT_FOUND, "방문 기록을 찾을 수 없습니다.");
 
     private final HttpStatus status;
     private final String message;

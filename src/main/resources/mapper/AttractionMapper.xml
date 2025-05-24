@@ -94,4 +94,10 @@
         FROM sub_attractions
         WHERE attraction_no = #{attractionNo}
     </select>
+
+    <update id="increaseVisitCount" parameterType="long">
+        UPDATE attractions
+        SET visit_count = visit_count + 1
+        WHERE no = #{attractionNo}
+    </update>
 </mapper>

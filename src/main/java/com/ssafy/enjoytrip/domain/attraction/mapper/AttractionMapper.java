@@ -50,4 +50,6 @@ public interface AttractionMapper {
     );
 
     List<SubAttraction> findSubAttractions(@Param("attractionNo") int attractionNo);
+
+    void increaseVisitCount(@Param("attractionNo") Long attractionNo);
 }
