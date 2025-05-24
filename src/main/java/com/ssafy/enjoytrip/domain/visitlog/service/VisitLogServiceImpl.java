@@ -46,6 +46,9 @@ public class VisitLogServiceImpl implements VisitLogService {
         if (!visitLogMapper.existsByIdAndUserId(visitLogId, userId)) {
             throw new VisitLogException(VISITLOG_NOT_FOUND);
         }
+        if (preference == null || preference < 1 || preference > 10) {
+            throw new VisitLogException(INVALID_PREFERENCE);
+        }
         visitLogMapper.updatePreference(userId, visitLogId, preference);
     }
 }
