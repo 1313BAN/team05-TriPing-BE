@@ -3,6 +3,7 @@ package com.ssafy.enjoytrip.domain.visitlog.controller;
 import com.ssafy.enjoytrip.auth.jwt.UserPrincipal;
 import com.ssafy.enjoytrip.domain.visitlog.dto.VisitLogCreateRequest;
 import com.ssafy.enjoytrip.domain.visitlog.dto.VisitLogCreatedResponse;
+import com.ssafy.enjoytrip.domain.visitlog.dto.VisitLogListResponse;
 import com.ssafy.enjoytrip.domain.visitlog.service.VisitLogService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -40,5 +41,15 @@ public class VisitLogController {
             @AuthenticationPrincipal UserPrincipal userPrincipal
     ) {
         visitLogService.updatePreference(userPrincipal.getId(), visitLogId, preference);
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<VisitLogListResponse> getMyVisitLogs(
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @RequestParam(defaultValue = "1") int page
+    ) {
+        int pageSize = 10;
+        VisitLogListResponse response = visitLogService.getVisitLogsByUser(userPrincipal.getId(), page, pageSize);
+        return ResponseEntity.ok(response);
     }
 }

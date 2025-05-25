@@ -3,6 +3,8 @@ package com.ssafy.enjoytrip.domain.visitlog.service;
 import com.ssafy.enjoytrip.domain.attraction.service.AttractionService;
 import com.ssafy.enjoytrip.domain.visitlog.dto.VisitLogCreateRequest;
 import com.ssafy.enjoytrip.domain.visitlog.dto.VisitLogCreatedResponse;
+import com.ssafy.enjoytrip.domain.visitlog.dto.VisitLogListResponse;
+import com.ssafy.enjoytrip.domain.visitlog.dto.VisitLogResponse;
 import com.ssafy.enjoytrip.domain.visitlog.exception.VisitLogException;
 import com.ssafy.enjoytrip.domain.visitlog.mapper.VisitLogMapper;
 import com.ssafy.enjoytrip.domain.visitlog.model.VisitLog;
@@ -11,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.*;
+import java.util.List;
 
 import static com.ssafy.enjoytrip.exception.ErrorCode.*;
 
@@ -84,4 +87,19 @@ public class VisitLogServiceImpl implements VisitLogService {
         }
         visitLogMapper.updatePreference(userId, visitLogId, preference);
     }
+
+    @Override
+    public VisitLogListResponse getVisitLogsByUser(Long userId, int page, int size) {
+        int offset = (page - 1) * size;
+        List<VisitLogResponse> visitLogs = visitLogMapper.findVisitLogsByUser(userId, size, offset);
+        long totalCount = visitLogMapper.countVisitLogsByUser(userId);
+
+        return VisitLogListResponse.builder()
+                .visitLogs(visitLogs)
+                .page(page)
+                .size(size)
+                .totalCount(totalCount)
+                .build();
+    }
+
 }

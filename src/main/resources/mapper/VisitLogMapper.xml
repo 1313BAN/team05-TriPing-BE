@@ -34,5 +34,26 @@
         )
     </select>
 
+    <select id="findVisitLogsByUser" resultType="com.ssafy.enjoytrip.domain.visitlog.dto.VisitLogResponse">
+        SELECT
+        vl.id AS visitLogId,
+        vl.attraction_no AS attractionNo,
+        a.title,
+        a.latitude,
+        a.longitude,
+        vl.entered_at AS enteredAt,
+        vl.exited_at AS exitedAt,
+        vl.preference
+        FROM visit_log vl
+        JOIN attractions a ON vl.attraction_no = a.no
+        WHERE vl.user_id = #{userId}
+        ORDER BY vl.entered_at DESC
+        LIMIT #{size} OFFSET #{offset}
+    </select>
 
+    <select id="countVisitLogsByUser" resultType="long">
+        SELECT COUNT(*)
+        FROM visit_log
+        WHERE user_id = #{userId}
+    </select>
 </mapper>
