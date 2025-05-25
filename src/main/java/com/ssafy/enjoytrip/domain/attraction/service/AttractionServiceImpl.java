@@ -156,7 +156,6 @@ public class AttractionServiceImpl implements AttractionService {
 
             // Redis에 없으면 Overpass에서 가져옴
             if (polygonJson == null) {
-                System.out.println("캐싱에 없음: " + attraction.getTitle());
                 String rawOverpassJson = overpassApiService.fetchPolygon(
                         attraction.getTitle(),
                         attraction.getLatitude(),
@@ -174,8 +173,6 @@ public class AttractionServiceImpl implements AttractionService {
                 } else {
                     continue;
                 }
-            } else {
-                System.out.println("캐시 hit: " + attraction.getTitle());
             }
 
             if (isInsidePolygon(polygonJson, lat, lng)) {
@@ -201,8 +198,6 @@ public class AttractionServiceImpl implements AttractionService {
             String polygonJson = redisTemplate.opsForValue().get(key);
 
             if (polygonJson == null) {
-                System.out.println("서브 캐싱에 없음: " + sub.getTitle());
-
                 String rawOverpassJson = overpassApiService.fetchPolygon(
                         sub.getTitle(),
                         sub.getLatitude(),
@@ -220,8 +215,6 @@ public class AttractionServiceImpl implements AttractionService {
                 } else {
                     continue; // 폴리곤이 없는 경우 스킵
                 }
-            } else {
-                System.out.println("서브 캐시 hit: " + sub.getTitle());
             }
 
             result.add(SubAttractionPolygonDTO.builder()
