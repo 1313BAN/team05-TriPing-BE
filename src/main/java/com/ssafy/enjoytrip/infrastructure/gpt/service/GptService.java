@@ -1,5 +1,10 @@
 package com.ssafy.enjoytrip.infrastructure.gpt.service;
 
+import com.ssafy.enjoytrip.infrastructure.gpt.dto.GptGuideResponse;
+
 public interface GptService {
-    String getAnswer(String name, String address);
-}
+    GptGuideResponse getGuideByTitleAndAddress(int id, String title, String address);
+
+};
+
+
