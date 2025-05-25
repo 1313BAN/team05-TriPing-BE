@@ -26,12 +26,15 @@ public class VisitLogServiceImpl implements VisitLogService {
     @Override
     @Transactional
     public VisitLogCreatedResponse createVisitLog(Long userId, VisitLogCreateRequest request) {
+        // ✅ 반드시 Asia/Seoul로 고정
+        ZoneId seoulZone = ZoneId.of("Asia/Seoul");
+
         LocalDateTime enteredAt = Instant.ofEpochMilli(request.getEnteredAt())
-                .atZone(ZoneId.systemDefault())
+                .atZone(seoulZone)
                 .toLocalDateTime();
 
         LocalDateTime exitedAt = Instant.ofEpochMilli(request.getExitedAt())
-                .atZone(ZoneId.systemDefault())
+                .atZone(seoulZone)
                 .toLocalDateTime();
 
         if (exitedAt.isBefore(enteredAt)) {
@@ -39,12 +42,19 @@ public class VisitLogServiceImpl implements VisitLogService {
         }
 
         long minutes = Duration.between(enteredAt, exitedAt).toMinutes();
-        // 테스트 환경 예외처리 제거
-//        if (minutes < MIN_REQUIRED_STAY_MINUTES) {  // 5분 미만의 체류시간인 경우
-//            throw new VisitLogException(STAY_TIME_NOT_ENOUGH);
-//        }
 
-        if (visitLogMapper.existsByUserIdAndAttractionNoAndDate(userId, request.getAttractionNo(), enteredAt.toLocalDate())) {
+        // 테스트 중이라면 주석 유지 가능
+        // if (minutes < MIN_REQUIRED_STAY_MINUTES) {
+        //     throw new VisitLogException(STAY_TIME_NOT_ENOUGH);
+        // }
+
+        boolean alreadyVisited = visitLogMapper.existsByUserIdAndAttractionNoAndDate(
+                userId,
+                request.getAttractionNo(),
+                enteredAt.toLocalDate()
+        );
+
+        if (alreadyVisited) {
             throw new VisitLogException(ALREADY_VISITED_TODAY);
         }
 
@@ -58,8 +68,10 @@ public class VisitLogServiceImpl implements VisitLogService {
 
         visitLogMapper.insertVisitLog(log);
         attractionService.increaseVisitCount(request.getAttractionNo());
+
         return new VisitLogCreatedResponse(log.getId());
     }
+
 
     @Override
     @Transactional
