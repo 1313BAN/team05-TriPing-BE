@@ -3,7 +3,7 @@ package com.ssafy.enjoytrip.infrastructure.gpt.service;
 import com.ssafy.enjoytrip.infrastructure.gpt.dto.GptGuideResponse;
 
 public interface GptService {
-    GptGuideResponse getGuideByTitleAndAddress(String title, String address);
+    GptGuideResponse getGuideByTitleAndAddress(int id, String title, String address);
 
 };
 

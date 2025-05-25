@@ -88,6 +88,7 @@ public class AttractionController {
 
         // 2️⃣ GPT에서 JSON 응답 받아서 DTO로 매핑됨
         GptGuideResponse guideResponse = gptService.getGuideByTitleAndAddress(
+                id,
                 attraction.getTitle(),
                 attraction.getAddr1()
         );
