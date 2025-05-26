@@ -108,6 +108,7 @@
         title,
         addr1 AS address,
         visit_count AS visitCount,
+        first_image1 AS imageUrl,
         (6371000 * ACOS(
         COS(RADIANS(#{lat})) * COS(RADIANS(latitude)) *
         COS(RADIANS(longitude) - RADIANS(#{lng})) +

@@ -4,7 +4,9 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssafy.enjoytrip.domain.attraction.service.AttractionService;
 import com.ssafy.enjoytrip.infrastructure.gpt.dto.GptGuideResponse;
+import com.ssafy.enjoytrip.infrastructure.gpt.dto.GptRecommendResponse;
 import com.ssafy.enjoytrip.infrastructure.gpt.dto.GptSubGuideResponse;
+import com.ssafy.enjoytrip.infrastructure.gpt.dto.RecommendedAttraction;
 import com.ssafy.enjoytrip.infrastructure.gpt.util.GptPromptUtil;
 import com.ssafy.enjoytrip.util.RedisKeyUtil;
 import lombok.RequiredArgsConstructor;
@@ -132,6 +134,32 @@ public class GptServiceImpl implements GptService {
             log.error("📥 GPT 응답 (에러 발생 전 수신된 응답):\n{}", gptSubResponse);
             log.error("📛 예외 메시지: {}", e.getMessage(), e);
             throw new RuntimeException("GPT 응답 파싱 실패", e);
+        }
+    }
+
+    public GptRecommendResponse getRecommendFromGpt(String prompt) {
+        String gptResponse = null;
+
+        try {
+            // ✅ GPT 호출
+            gptResponse = chatClient
+                    .prompt(new Prompt(prompt))
+                    .call()
+                    .content();
+
+            log.debug("📥 GPT 추천 응답 원문:\n{}", gptResponse);
+
+            // ✅ 응답 파싱 → DTO
+            GptRecommendResponse res = objectMapper.readValue(gptResponse, GptRecommendResponse.class);
+            log.info("✅ GPT 추천 파싱 완료: {}개 추천됨", res.getRecommendations().size());
+            return res;
+
+        } catch (Exception e) {
+            log.error("❌ GPT 추천 응답 파싱 실패");
+            log.error("🧾 요청 프롬프트:\n{}", prompt);
+            log.error("📥 GPT 응답 (에러 발생 전 수신된 응답):\n{}", gptResponse);
+            log.error("📛 예외 메시지: {}", e.getMessage(), e);
+            throw new RuntimeException("GPT 추천 응답 파싱 실패", e);
         }
     }
 

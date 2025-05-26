@@ -11,6 +11,7 @@ public class AttractionForRecommendDTO {
     private Long no;
     private String title;
     private String address;
+    private String imageUrl;
     private Integer visitCount;
     private Double distance; // 미터 단위
 }
