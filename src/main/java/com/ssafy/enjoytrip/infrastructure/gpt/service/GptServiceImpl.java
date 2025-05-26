@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssafy.enjoytrip.domain.attraction.service.AttractionService;
 import com.ssafy.enjoytrip.infrastructure.gpt.dto.GptGuideResponse;
+import com.ssafy.enjoytrip.infrastructure.gpt.dto.GptSubGuideResponse;
 import com.ssafy.enjoytrip.infrastructure.gpt.util.GptPromptUtil;
 import com.ssafy.enjoytrip.util.RedisKeyUtil;
 import lombok.RequiredArgsConstructor;
@@ -87,4 +88,39 @@ public class GptServiceImpl implements GptService {
     }
 
 
+    @Override
+    public GptSubGuideResponse getSubGuideByTitleAndSubTitle(String title, String subTitle) {
+
+        String userPrompt = gptPromptUtil.generateSubPrompt(title, subTitle);
+        String gptSubResponse = null;
+
+        try {
+            // ✅ 프롬프트 생성
+//            String systemPrompt = gptPromptUtil.generateSystemPrompt()
+
+            log.debug("📤 생성된 프롬프트:\n{}", userPrompt);
+
+            // ✅ GPT 호출
+            gptSubResponse = chatClient
+                    .prompt(new Prompt(userPrompt))
+                    .call()
+                    .content();
+
+            log.debug("📥 GPT 응답 원문:\n{}", gptSubResponse);
+
+            // ✅ 응답 파싱 → DTO 생성
+            GptSubGuideResponse res = objectMapper.readValue(gptSubResponse, GptSubGuideResponse.class);
+            res.setTitle(title);
+            res.setSubtitle(subTitle);
+
+            return res;
+
+        } catch (Exception e) {
+            log.error("❌ GPT 응답 파싱 실패");
+            log.error("🧾 요청 프롬프트:\n{}", userPrompt);
+            log.error("📥 GPT 응답 (에러 발생 전 수신된 응답):\n{}", gptSubResponse);
+            log.error("📛 예외 메시지: {}", e.getMessage(), e);
+            throw new RuntimeException("GPT 응답 파싱 실패", e);
+        }
+    }
 }

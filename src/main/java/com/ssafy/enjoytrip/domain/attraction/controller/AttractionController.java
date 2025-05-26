@@ -6,8 +6,8 @@ import com.ssafy.enjoytrip.domain.attraction.model.Attraction;
 import com.ssafy.enjoytrip.domain.attraction.dto.AttractionMarkerDTO;
 import com.ssafy.enjoytrip.domain.attraction.service.AttractionService;
 import com.ssafy.enjoytrip.infrastructure.gpt.dto.GptGuideResponse;
+import com.ssafy.enjoytrip.infrastructure.gpt.dto.GptSubGuideResponse;
 import com.ssafy.enjoytrip.infrastructure.gpt.service.GptService;
-import com.ssafy.enjoytrip.infrastructure.gpt.service.GptTestService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,7 +22,6 @@ public class AttractionController {
 
     private final AttractionService attractionService;
     private final GptService gptService;
-    private final GptTestService gptTestService;
 
 
 
@@ -97,11 +96,17 @@ public class AttractionController {
         return ResponseEntity.ok(guideResponse);
     }
 
+    @GetMapping("/subguide")
+    public ResponseEntity<GptSubGuideResponse> getSubAttractionGuide(@RequestParam String title, @RequestParam String subTitle) {
 
-    @GetMapping("/test")
-    public String testGpt(@RequestParam String prompt) {
-        return gptTestService.testGpt(prompt);
+        // 2️⃣ GPT에서 JSON 응답 받아서 DTO로 매핑됨
+        GptSubGuideResponse subguideResponse = gptService.getSubGuideByTitleAndSubTitle(title,subTitle);
+
+        // 3️⃣ 응답 DTO로 감싸서 프론트로 반환
+        return ResponseEntity.ok(subguideResponse);
     }
+
+
 
 
 

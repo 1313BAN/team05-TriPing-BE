@@ -19,13 +19,19 @@ public class GptPromptUtil {
     @Value("${SYSTEM_PROMPT_PATH}")
     private String systemPromptPath;
 
+    @Value("${SUB_GUIDE_PROMPT_PATH}")
+    private String subGuidePromptPath;
+
     private String guidePromptTemplate;
     private String systemPromptTemplate;
+    private String subGuidePromptTemplate;
+
 
     @PostConstruct
     public void loadPrompts() {
         this.guidePromptTemplate = loadPromptFromFile(guidePromptPath);
         this.systemPromptTemplate = loadPromptFromFile(systemPromptPath);
+        this.subGuidePromptTemplate = loadPromptFromFile(subGuidePromptPath); // ✅ 서브용 템플릿 로드
     }
 
     private String loadPromptFromFile(String path) {
@@ -40,11 +46,17 @@ public class GptPromptUtil {
         }
     }
 
+    // 일반 가이드
     public String generateUserPrompt(String title, String address) {
         return String.format(guidePromptTemplate, title, address);
     }
 
     public String generateSystemPrompt() {
         return systemPromptTemplate;
+    }
+
+    // 서브 관광지용 사용자 프롬프트 생성
+    public String generateSubPrompt(String title, String subTitle) {
+        return String.format(subGuidePromptTemplate, title, subTitle);
     }
 }
