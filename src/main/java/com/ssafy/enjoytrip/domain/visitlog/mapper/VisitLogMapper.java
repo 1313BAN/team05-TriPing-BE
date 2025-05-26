@@ -1,6 +1,6 @@
 package com.ssafy.enjoytrip.domain.visitlog.mapper;
 
-import com.ssafy.enjoytrip.domain.visitlog.dto.VisitLogResponse;
+import com.ssafy.enjoytrip.domain.visitlog.dto.VisitLogDTO;
 import com.ssafy.enjoytrip.domain.visitlog.model.VisitLog;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -21,10 +21,10 @@ public interface VisitLogMapper {
             @Param("date") LocalDate date
     );
 
-    List<VisitLogResponse> findVisitLogsByUser(
+    List<VisitLogDTO> findVisitLogsByUser(
             @Param("userId") Long userId,
-            @Param("size") int size,
-            @Param("offset") int offset
+            @Param("size") Integer size,
+            @Param("offset") Integer offset
     );
 
     long countVisitLogsByUser(@Param("userId") Long userId);

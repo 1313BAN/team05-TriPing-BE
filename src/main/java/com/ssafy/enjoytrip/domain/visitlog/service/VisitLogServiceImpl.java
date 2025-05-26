@@ -1,10 +1,7 @@
 package com.ssafy.enjoytrip.domain.visitlog.service;
 
 import com.ssafy.enjoytrip.domain.attraction.service.AttractionService;
-import com.ssafy.enjoytrip.domain.visitlog.dto.VisitLogCreateRequest;
-import com.ssafy.enjoytrip.domain.visitlog.dto.VisitLogCreatedResponse;
-import com.ssafy.enjoytrip.domain.visitlog.dto.VisitLogListResponse;
-import com.ssafy.enjoytrip.domain.visitlog.dto.VisitLogResponse;
+import com.ssafy.enjoytrip.domain.visitlog.dto.*;
 import com.ssafy.enjoytrip.domain.visitlog.exception.VisitLogException;
 import com.ssafy.enjoytrip.domain.visitlog.mapper.VisitLogMapper;
 import com.ssafy.enjoytrip.domain.visitlog.model.VisitLog;
@@ -13,7 +10,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static com.ssafy.enjoytrip.exception.ErrorCode.*;
 
@@ -89,16 +90,45 @@ public class VisitLogServiceImpl implements VisitLogService {
     }
 
     @Override
-    public VisitLogListResponse getVisitLogsByUser(Long userId, int page, int size) {
+    public VisitLogsForRecommendDTO getVisitLogsByUser(Long userId, Integer page, Integer size) {
         int offset = (page - 1) * size;
-        List<VisitLogResponse> visitLogs = visitLogMapper.findVisitLogsByUser(userId, size, offset);
+        List<VisitLogDTO> visitLogs = visitLogMapper.findVisitLogsByUser(userId, size, offset);
         long totalCount = visitLogMapper.countVisitLogsByUser(userId);
 
-        return VisitLogListResponse.builder()
+        return VisitLogsForRecommendDTO.builder()
                 .visitLogs(visitLogs)
                 .page(page)
                 .size(size)
                 .totalCount(totalCount)
+                .build();
+    }
+
+    // 날짜그룹으로 조회 (사용자용)
+    @Override
+    public VisitLogListDTO getVisitLogsByUserGroupedByDate(Long userId, Integer page) {
+        List<VisitLogDTO> allLogs = visitLogMapper.findVisitLogsByUser(userId, null, null);
+
+        Map<LocalDate, List<VisitLogDTO>> grouped = allLogs.stream()
+                .collect(Collectors.groupingBy(
+                        log -> log.getEnteredAt().toLocalDate(), // enteredAt이 String일 경우
+                        LinkedHashMap::new,
+                        Collectors.toList()
+                ));
+
+        List<List<VisitLogDTO>> groupedList = new ArrayList<>(grouped.values());
+
+        int totalGroupCount = groupedList.size();
+        int fromIndex = Math.min((page - 1), totalGroupCount);
+        int toIndex = Math.min(fromIndex + 1, totalGroupCount); // size == 1
+
+        List<VisitLogDTO> pageLogs = groupedList.subList(fromIndex, toIndex).stream()
+                .flatMap(List::stream)
+                .toList();
+
+        return VisitLogListDTO.builder()
+                .visitLogs(pageLogs)
+                .page(page)
+                .totalCount(totalGroupCount)
                 .build();
     }
 

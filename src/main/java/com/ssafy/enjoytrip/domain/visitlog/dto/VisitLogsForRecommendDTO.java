@@ -7,8 +7,8 @@ import java.util.List;
 
 @Data
 @Builder
-public class VisitLogListResponse {
-    private List<VisitLogResponse> visitLogs;
+public class VisitLogsForRecommendDTO {
+    private List<VisitLogDTO> visitLogs;
     private int page;
     private int size;
     private long totalCount;

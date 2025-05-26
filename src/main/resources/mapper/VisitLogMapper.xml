@@ -34,7 +34,7 @@
         )
     </select>
 
-    <select id="findVisitLogsByUser" resultType="com.ssafy.enjoytrip.domain.visitlog.dto.VisitLogResponse">
+    <select id="findVisitLogsByUser" resultType="com.ssafy.enjoytrip.domain.visitlog.dto.VisitLogDTO">
         SELECT
         vl.id AS visitLogId,
         vl.attraction_no AS attractionNo,
@@ -48,8 +48,11 @@
         JOIN attractions a ON vl.attraction_no = a.no
         WHERE vl.user_id = #{userId}
         ORDER BY vl.entered_at DESC
-        LIMIT #{size} OFFSET #{offset}
+        <if test="size != null and offset != null">
+            LIMIT #{size} OFFSET #{offset}
+        </if>
     </select>
+
 
     <select id="countVisitLogsByUser" resultType="long">
         SELECT COUNT(*)
