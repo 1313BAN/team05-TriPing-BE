@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssafy.enjoytrip.domain.attraction.service.AttractionService;
 import com.ssafy.enjoytrip.infrastructure.gpt.dto.GptGuideResponse;
+import com.ssafy.enjoytrip.infrastructure.gpt.dto.GptSubGuideResponse;
 import com.ssafy.enjoytrip.infrastructure.gpt.util.GptPromptUtil;
 import com.ssafy.enjoytrip.util.RedisKeyUtil;
 import lombok.RequiredArgsConstructor;
@@ -86,5 +87,52 @@ public class GptServiceImpl implements GptService {
         }
     }
 
+
+    @Override
+    public GptSubGuideResponse getSubGuideByTitleAndSubTitle(String title, String subTitle) {
+
+        String key = RedisKeyUtil.buildGptSubGuideKey(title, subTitle);
+        String userPrompt = gptPromptUtil.generateSubPrompt(title, subTitle);
+        String gptSubResponse = null;
+
+        try {
+            // ✅ Redis 캐시 조회
+            String cached = redisTemplate.opsForValue().get(key);
+            if (cached != null) {
+                log.info("📦 [GPT SubGuide 캐시 HIT] title = {}, subTitle = {}", title, subTitle);
+                GptSubGuideResponse cachedRes = objectMapper.readValue(cached, GptSubGuideResponse.class);
+                return cachedRes;
+            }
+
+            // ✅ 프롬프트 로그 출력
+            log.debug("📤 생성된 프롬프트:\n{}", userPrompt);
+
+            // ✅ GPT 호출
+            gptSubResponse = chatClient
+                    .prompt(new Prompt(userPrompt))
+                    .call()
+                    .content();
+
+            log.debug("📥 GPT 응답 원문:\n{}", gptSubResponse);
+
+            // ✅ 응답 파싱 → DTO 생성
+            GptSubGuideResponse res = objectMapper.readValue(gptSubResponse, GptSubGuideResponse.class);
+            res.setTitle(title);
+            res.setSubtitle(subTitle);
+
+            // ✅ Redis 저장
+            redisTemplate.opsForValue().set(key, objectMapper.writeValueAsString(res), Duration.ofDays(14));
+            log.info("🌐 [GPT SubGuide 호출] {} - {} → 캐시 저장 완료", title, subTitle);
+
+            return res;
+
+        } catch (Exception e) {
+            log.error("❌ GPT SubGuide 응답 파싱 실패");
+            log.error("🧾 요청 프롬프트:\n{}", userPrompt);
+            log.error("📥 GPT 응답 (에러 발생 전 수신된 응답):\n{}", gptSubResponse);
+            log.error("📛 예외 메시지: {}", e.getMessage(), e);
+            throw new RuntimeException("GPT 응답 파싱 실패", e);
+        }
+    }
 
 }

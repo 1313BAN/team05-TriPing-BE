@@ -13,4 +13,8 @@ public class RedisKeyUtil {
     public static String buildGptGuideKey(int id) {
         return "gpt:guide:" + id;
     }
+
+    public static String buildGptSubGuideKey(String title, String subTitle) {
+        return "GPT:SUB:" + title + "::" + subTitle;
+    }
 }
