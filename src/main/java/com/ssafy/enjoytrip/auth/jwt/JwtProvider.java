@@ -14,7 +14,7 @@ public class JwtProvider {
     @Value("${jwt.secret}")
     private String secretKey;
 
-    private final long accessTokenExpiration = 60 * 60 * 1000L; // 1시간
+    private final long accessTokenExpiration = 60 * 60 * 3000L; // 3시간
 
 
     //토큰 생성 수정
