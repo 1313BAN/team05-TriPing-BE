@@ -23,13 +23,13 @@ spring:
     restart:
       enabled: true
 
-  # Spring AI
-  ai:
-    openai:
-      api-key: ${OPENAI_SECRET}
-      base-url: https://api.openai.com
-      chat:
-        model: ${OPENAI_MODEL}
+#  # Spring AI
+#  ai:
+#    openai:
+#      api-key: ${OPENAI_SECRET}
+#      base-url: https://api.openai.com
+#      chat:
+#        model: ${OPENAI_MODEL}
 
 
 mybatis:

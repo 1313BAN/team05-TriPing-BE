@@ -5,13 +5,13 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class AIConfig {
-
-    @Bean
-    ChatClient simpleChatClient(ChatClient.Builder builder) {
-        // TODO: 02. ChatClient 타입의 빈을 생성해보자.
-        return builder.defaultSystem("ddd").build();
-
-        //END
-    }
+//
+//    @Bean
+//    ChatClient simpleChatClient(ChatClient.Builder builder) {
+//        // TODO: 02. ChatClient 타입의 빈을 생성해보자.
+//        return builder.defaultSystem("ddd").build();
+//
+//        //END
+//    }
 
 }

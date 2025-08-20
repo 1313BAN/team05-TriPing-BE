@@ -8,10 +8,9 @@ import com.ssafy.enjoytrip.infrastructure.gpt.dto.RecommendedAttraction;
 import java.util.List;
 
 public interface GptService {
-    GptGuideResponse getGuideByTitleAndAddress(int id, String title, String address);
-    GptSubGuideResponse getSubGuideByTitleAndSubTitle(String title, String subTitle);
-    GptRecommendResponse getRecommendFromGpt(String prompt);
+//    GptGuideResponse getGuideByTitleAndAddress(int id, String title, String address);
+//    GptSubGuideResponse getSubGuideByTitleAndSubTitle(String title, String subTitle);
+//    GptRecommendResponse getRecommendFromGpt(String prompt);
 
 };
-
 
